@@ -14,12 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [zero_raspbian, zero_raspios, zero_dietpi, zero2_64_raspios]
+        target: [zero_raspios, zero_dietpi, zero2_64_raspios]
         include:
-        - target: zero_raspbian
-          cpu: arm1176
-          cpu_info: cpuinfo/raspberrypi_zero_w
-          base_image: raspbian_lite:latest
         - target: zero_raspios
           cpu: arm1176
           cpu_info: cpuinfo/raspberrypi_zero_w
@@ -68,12 +64,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [zero_raspbian, zero_raspios, zero_dietpi, zero2_64_raspios]
+        target: [zero_raspios, zero_dietpi, zero2_64_raspios]
         include:
-        - target: zero_raspbian
-          cpu: arm1176
-          cpu_info: cpuinfo/raspberrypi_zero_w
-          base_image: raspbian_lite:latest
         - target: zero_raspios
           cpu: arm1176
           cpu_info: cpuinfo/raspberrypi_zero_w
