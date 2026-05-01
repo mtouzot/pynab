@@ -28,13 +28,11 @@ esac
 
 LC_ALL=C
 
-if [ -d "/boot/dietpi" ]
-then
-    # DietPi distro
+if [ -d "/boot/dietpi" ] || [ -f "/boot/dietpi/.version" ] || \
+   (grep -qi dietpi /etc/os-release 2>/dev/null); then
     distro="dietpi"
-elif [ -f "/etc/rpi-issue" ]
-then
-    # Raspberry Pi OS distro
+elif (grep -qi "raspbian\|raspberry" /etc/os-release 2>/dev/null) || \
+     grep -qi "raspberry" /proc/device-tree/model 2>/dev/null; then
     distro="raspios"
 else
     echo "$(basename ${0}): unsupported Linux distribution!"
