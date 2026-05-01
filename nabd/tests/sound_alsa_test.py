@@ -85,7 +85,7 @@ class TestPlaySound(unittest.TestCase):
     def test_stream_mp3(self):
         start_task = self.loop.create_task(
             self.sound.start_playing(
-                "https://github.com/nabaztag2018/pynab/raw/master/nabd/"
+                "https://github.com/mtouzot/pynab/raw/master/nabd/"
                 "sounds/choreographies/3notesE5A5C6.mp3"
             )
         )

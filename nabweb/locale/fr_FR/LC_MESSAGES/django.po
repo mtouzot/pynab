@@ -226,10 +226,10 @@ msgstr ""
 
 #: templates/nabweb/help.html:19
 msgid ""
-"The <a target='_blank' href='https://github.com/nabaztag2018/pynab/#readme' "
+"The <a target='_blank' href='https://github.com/mtouzot/pynab/#readme' "
 "rel='noopener noreferrer'>GitHub repository</a>"
 msgstr ""
-"Le <a target='_blank' href='https://github.com/nabaztag2018/pynab/#readme' "
+"Le <a target='_blank' href='https://github.com/mtouzot/pynab/#readme' "
 "rel='noopener noreferrer'>référentiel GitHub</a>"
 
 #: templates/nabweb/help.html:19
@@ -296,7 +296,7 @@ msgstr ""
 "services/'>services du Nabaztag</a> ou des <a href='/rfid/'>tags NFC</a>, <a "
 "href='/upgrade/'>mettre à jour</a> le logiciel, ou <a target='_blank' href='/"
 "help/'>obtenir de l'aide</a>. Vous pouvez aussi visiter le <a "
-"target='_blank' href='https://github.com/nabaztag2018/pynab' rel='noopener "
+"target='_blank' href='https://github.com/mtouzot/pynab' rel='noopener "
 "noreferrer'>référentiel GitHub</a> pour contribuer ou simplement signaler "
 "des bogues."
 

@@ -1,7 +1,7 @@
 # Nabaztag en Python pour Raspberry Pi
 
-[![build (qemu)](https://github.com/nabaztag2018/pynab/actions/workflows/arm-runner.yml/badge.svg?branch=master)](https://github.com/nabaztag2018/pynab/actions/workflows/arm-runner.yml)
-[![tests](https://github.com/nabaztag2018/pynab/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/nabaztag2018/pynab/actions/workflows/tests.yml)
+[![build (qemu)](https://github.com/mtouzot/pynab/actions/workflows/arm-runner.yml/badge.svg?branch=master)](https://github.com/mtouzot/pynab/actions/workflows/arm-runner.yml)
+[![tests](https://github.com/mtouzot/pynab/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/mtouzot/pynab/actions/workflows/tests.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![codecov](https://codecov.io/gh/nabaztag2018/pynab/branch/master/graph/badge.svg)](https://codecov.io/gh/nabaztag2018/pynab)
 [![Twitter](https://img.shields.io/twitter/follow/nabaztagtagtag?label=Follow&style=social)](https://twitter.com/nabaztagtagtag)
@@ -65,7 +65,7 @@ sudo apt-get install alsa-utils xz-utils avahi-daemon
 ### 3. Récupérer le code
 
 ```sh
-git clone https://github.com/nabaztag2018/pynab.git
+git clone https://github.com/mtouzot/pynab.git
 cd pynab
 ```
 
