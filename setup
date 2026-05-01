@@ -34,6 +34,9 @@ if [ -d "/boot/dietpi" ] || [ -f "/boot/dietpi/.version" ] || \
 elif (grep -qi "raspbian\|raspberry" /etc/os-release 2>/dev/null) || \
      grep -qi "raspberry" /proc/device-tree/model 2>/dev/null; then
     distro="raspios"
+elif grep -qi "debian" /etc/os-release 2>/dev/null || \
+     grep -qi "raspberry" /proc/device-tree/model 2>/dev/null; then
+    distro="debian"
 else
     echo "$(basename ${0}): unsupported Linux distribution!"
     exit 3
@@ -142,6 +145,10 @@ then
         # -4=Daemon + Drift rather than 2=boot + daily (DietPi default):
         sed -i "s/\(CONFIG_NTP_MODE\)=.*/\1=4/" /boot/dietpi.txt
         sed -i "s/\(CONFIG_SERIAL_CONSOLE_ENABLE\)=.*/\1=0/" /boot/dietpi.txt
+    elif [ "${distro}" == "debian" ]
+    then
+        echo "Disabling SSH service (can be re-enabled with 'sudo systemctl enable ssh')"
+        sudo systemctl disable ssh
     fi
 
     echo "Setting hostname."
@@ -162,6 +169,11 @@ then
 elif [ "${distro}" == "dietpi" ]
 then
     echo "${owner} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${owner}
+elif [ "${distro}" == "debian" ]
+then
+    echo "${owner} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/010_${owner}-nopasswd
+else
+    echo "No sudoers adjustments needed for ${distro}."
 fi
 
 echo "Installing required packages."
