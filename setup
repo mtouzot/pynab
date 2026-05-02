@@ -8,7 +8,7 @@ IFS=$'\n\t'
 # https://github.com/kr15h/travis-raspbian-image
 # https://disconnected.systems/blog/custom-rpi-image-with-github-travis/
 
-pynab_repository=${GITHUB_REPOSITORY:-nabaztag2018/pynab}
+pynab_repository=${GITHUB_REPOSITORY:-mtouzot/pynab}
 pynab_branch=${GITHUB_BRANCH:-release}
 case ${pynab_branch} in
     v+([0-9]).+([0-9]).+([0-9])*)
