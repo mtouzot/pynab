@@ -235,15 +235,35 @@ if [ $makerfaire2018 -eq 0 ]; then
   fi
 fi
 
-cd ${root_dir}
 if [ -x "$(command -v python3.9)" ] ; then
   py_ver=3.9
 elif [ -x "$(command -v python3.7)" ] ; then
   py_ver=3.7
 else
-  echo "Please install Python 3.7 or 3.9 (you might need to upgrade your Linux distribution)"
-  exit 1
+  # --- Auto-install Python only if BOTH 3.9 and 3.7 are missing ---
+  echo "Neither Python 3.9 nor 3.7 found, installing Python 3.9..."
+
+  sudo apt-get update
+  sudo apt-get install -y python3.9 python3.9-venv python3.9-dev || {
+      echo "Python 3.9 not available via apt, trying build fallback..."
+
+      sudo apt-get install -y \
+          build-essential wget \
+          libssl-dev zlib1g-dev libncurses5-dev \
+          libsqlite3-dev libffi-dev libbz2-dev
+
+      cd /tmp
+      wget -q https://www.python.org/ftp/python/3.9.25/Python-3.9.25.tgz
+      tar -xzf Python-3.9.25.tgz
+      cd Python-3.9.25
+
+      ./configure --enable-optimizations
+      make -j$(nproc)
+      sudo make altinstall
+  }
+  py_ver=3.9
 fi
+cd ${root_dir}
 python=python${py_ver}
 venv_cfg="venv/pyvenv.cfg"
 if [[ -f "${venv_cfg}" && "$(grep -c version\ =\ ${py_ver} ${venv_cfg})" -eq 0 ]]; then
