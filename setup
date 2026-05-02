@@ -237,8 +237,17 @@ cd ${inst_dir}/pynab
 sudo -u ${owner} git clone --depth 1 -b ${driver_branch} https://github.com/pguyot/nabblockly
 sudo git config --system --add safe.directory ${inst_dir}/pynab/nabblockly
 cd ${inst_dir}/pynab/nabblockly
-# Until we can get OTP 24 from Raspian or Erlang Solutions, get an older rebar binary
-sudo -u ${owner} wget https://github.com/erlang/rebar3/releases/download/3.15.1/rebar3 && chmod +x rebar3
+OTP=$(erl -noshell -eval 'io:format("~s", [erlang:system_info(otp_release)]), halt().')
+# Select rebar3 version based on OTP version, since older rebar3 versions don't support newer OTP versions and newer rebar3 versions don't support older OTP versions.
+if [ "$OTP" -gt 25 ]; then
+    REBAR_VERSION="3.25.1"
+elif [ "$OTP" -ge 23 ] && [ "$OTP" -le 25 ]; then
+    REBAR_VERSION="3.20.0"
+else
+    REBAR_VERSION="3.15.2"
+fi
+REBAR_URL="https://github.com/erlang/rebar3/releases/download/${REBAR_VERSION}/rebar3"
+sudo -u ${owner} bash -c "wget -q $REBAR_URL -O rebar3 && chmod +x rebar3"
 sudo apt-get install --no-install-recommends -y g++
 sudo -u ${owner} ./rebar3 release
 
