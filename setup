@@ -242,13 +242,28 @@ sudo git config --system --add safe.directory ${inst_dir}/pynab
 
 echo "Installing NabBlockly."
 sudo apt-get install --no-install-recommends -y erlang-base erlang-dev erlang-inets erlang-tools erlang-xmerl
+sudo apt-get install --no-install-recommends -y g++
 cd ${inst_dir}/pynab
 sudo -u ${owner} git clone --depth 1 -b ${driver_branch} https://github.com/pguyot/nabblockly
 sudo git config --system --add safe.directory ${inst_dir}/pynab/nabblockly
 cd ${inst_dir}/pynab/nabblockly
-# Until we can get OTP 24 from Raspian or Erlang Solutions, get an older rebar binary
-sudo -u ${owner} wget https://github.com/erlang/rebar3/releases/download/3.15.1/rebar3 && chmod +x rebar3
-sudo apt-get install --no-install-recommends -y g++
+echo "Installing rebar3 (official)..."
+echo "Erlang OTP version:"
+OTP=$(erl -noshell -eval 'io:format("~s", [erlang:system_info(otp_release)]), halt().')
+echo "$OTP"
+# Choix de la version de rebar3 selon OTP
+if [ "$OTP" -gt 25 ]; then
+    REBAR_URL="https://github.com/erlang/rebar3/releases/download/3.25.1/rebar3"
+elif [ "$OTP" -ge 23 ] && [ "$OTP" -le 25 ]; then
+    REBAR_URL="https://github.com/erlang/rebar3/releases/download/3.20.0/rebar3"
+else
+    REBAR_URL="https://github.com/erlang/rebar3/releases/download/3.15.2/rebar3"
+fi
+echo "Installing rebar3 from: $REBAR_URL"
+sudo -u ${owner} bash -c "wget -q $REBAR_URL -O rebar3 && chmod +x rebar3"
+echo "rebar3 version:"
+sudo -u ${owner} ./rebar3 version || true
+echo "Building NabBlockly..."
 sudo -u ${owner} ./rebar3 release
 
 echo "Running Pynab install script."
