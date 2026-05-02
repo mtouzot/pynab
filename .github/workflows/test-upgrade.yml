@@ -61,6 +61,6 @@ jobs:
             cluster_version=`echo /etc/postgresql/*/main/pg_hba.conf  | sed -E 's|/etc/postgresql/(.+)/(.+)/pg_hba.conf|\1|g'`
             cluster_name=`echo /etc/postgresql/*/main/pg_hba.conf  | sed -E 's|/etc/postgresql/(.+)/(.+)/pg_hba.conf|\2|g'`
             sudo -u postgres taskset -c 0 /usr/lib/postgresql/${cluster_version}/bin/pg_ctl start -D /etc/postgresql/${cluster_version}/${cluster_name}/
-            sudo -u pi /bin/bash upgrade.sh
+            sudo -u pi /bin/bash upgrade.sh ci-chroot-test
             sudo mkdir -p /run/systemd/timesync/ && sudo touch /run/systemd/timesync/synchronized
             CI=1 venv/bin/pytest

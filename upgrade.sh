@@ -8,10 +8,16 @@ root_dir=`sed -nE -e 's|WorkingDirectory=(.+)|\1|p' < /lib/systemd/system/nabd.s
 owner=`stat -c '%U' ${root_dir}`
 uid=`stat -c '%u' ${root_dir}`
 
+ci_chroot_test=""
 step="init"
-if [ "${1:-}" == "install" ]; then
-  step="install"
-fi
+
+for arg in "$@"; do
+  if [ "$arg" = "install" ]; then
+    step="install"
+  elif [ "$arg" = "ci-chroot-test" ]; then
+    ci_chroot_test="ci-chroot-test"
+  fi
+done
 
 case $step in
   "init")
@@ -37,11 +43,34 @@ case $step in
     else
       git pull
     fi
-  
-    bash upgrade.sh "install"
+
+<<<<<<< HEAD
+    case $ci_chroot_test in
+      "ci-chroot-test")
+        bash upgrade.sh "install" ci_chroot_test
+        ;;
+      "")
+        echo "Upgrade complete"
+        ;;
+    esac
+=======
+    if printf '%s\n' "${forward_args[@]}" | grep -q "ci-chroot"; then
+      bash upgrade.sh --install "${forward_args[@]}"
+    else
+      bash upgrade.sh --install 
+    fi
+    echo "Upgrade complete"
+>>>>>>> 0fcb5df (tmp)
     ;;
   "install")
     cd ${root_dir}
-    sudo -u ${owner} bash install.sh --upgrade
+    case ci_chroot_test in
+        "ci-chroot-test")
+          sudo -u ${owner} bash install.sh --upgrade ci_chroot_test
+          ;;
+        "")
+          sudo -u ${owner} bash install.sh --upgrade
+          ;;
+      esac
     sudo rm -f /tmp/pynab.upgrade
 esac
