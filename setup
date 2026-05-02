@@ -126,29 +126,28 @@ then
     echo "service_name: Nabaztag" >> /etc/comitup.conf
     echo "external_callback: /opt/pynab/comitup-callback.sh" >> /etc/comitup.conf
 
-    if [ "${distro}" == "raspios"  ]
+    if [ "${distro}" = "raspios" ] || [ "${distro}" == "debian" ]
     then
-        # assume user will do any needed SD card configuration.
         echo "Disabling SSH (can be enabled by putting an ssh file in /boot/)"
-        sudo update-rc.d ssh disable
-    elif [ "${distro}" == "dietpi" ]
+        rm -f /boot/ssh || true
+        systemctl disable ssh 2>/dev/null || true
+        systemctl stop ssh 2>/dev/null || true
+
+    elif [ "${distro}" = "dietpi" ]
     then
         echo "Setting DietPi 'first boot' parameters."
-        sed -i "s/\(AUTO_SETUP_KEYBOARD_LAYOUT\)=.*/\1=fr/" /boot/dietpi.txt
-        sed -i "s/\(AUTO_SETUP_TIMEZONE\)=.*/\1=Europe\/Paris/" /boot/dietpi.txt
-        sed -i "s/\(AUTO_SETUP_NET_WIFI_ENABLED\)=.*/\1=1/" /boot/dietpi.txt
-        sed -i "s/\(AUTO_SETUP_NET_WIFI_COUNTRY_CODE\)=.*/\1=FR/" /boot/dietpi.txt
-        sed -i "s/\(AUTO_SETUP_NET_HOSTNAME\)=.*/\1=Nabaztag/" /boot/dietpi.txt
-        sed -i "s/\(AUTO_SETUP_HEADLESS\)=.*/\1=1/" /boot/dietpi.txt
-        # -1=Nginx rather than -2=Lighttpd (DietPi default):
-        sed -i "s/\(AUTO_SETUP_WEB_SERVER_INDEX\)=.*/\1=-1/" /boot/dietpi.txt
-        # -4=Daemon + Drift rather than 2=boot + daily (DietPi default):
-        sed -i "s/\(CONFIG_NTP_MODE\)=.*/\1=4/" /boot/dietpi.txt
-        sed -i "s/\(CONFIG_SERIAL_CONSOLE_ENABLE\)=.*/\1=0/" /boot/dietpi.txt
-    elif [ "${distro}" == "debian" ]
-    then
-        echo "Disabling SSH service (can be re-enabled with 'sudo systemctl enable ssh')"
-        sudo systemctl disable ssh
+
+        if [ -f /boot/dietpi.txt ]; then
+            sed -i "s/\(AUTO_SETUP_KEYBOARD_LAYOUT\)=.*/\1=fr/" /boot/dietpi.txt
+            sed -i "s/\(AUTO_SETUP_TIMEZONE\)=.*/\1=Europe\/Paris/" /boot/dietpi.txt
+            sed -i "s/\(AUTO_SETUP_NET_WIFI_ENABLED\)=.*/\1=1/" /boot/dietpi.txt
+            sed -i "s/\(AUTO_SETUP_NET_WIFI_COUNTRY_CODE\)=.*/\1=FR/" /boot/dietpi.txt
+            sed -i "s/\(AUTO_SETUP_NET_HOSTNAME\)=.*/\1=Nabaztag/" /boot/dietpi.txt
+            sed -i "s/\(AUTO_SETUP_HEADLESS\)=.*/\1=1/" /boot/dietpi.txt
+            sed -i "s/\(AUTO_SETUP_WEB_SERVER_INDEX\)=.*/\1=-1/" /boot/dietpi.txt
+            sed -i "s/\(CONFIG_NTP_MODE\)=.*/\1=4/" /boot/dietpi.txt
+            sed -i "s/\(CONFIG_SERIAL_CONSOLE_ENABLE\)=.*/\1=0/" /boot/dietpi.txt
+        fi
     fi
 
     echo "Setting hostname."
