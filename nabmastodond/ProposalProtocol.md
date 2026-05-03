@@ -33,23 +33,23 @@ Parentheses and text in parentheses must be included in the message.
 
 * Proposal
 
-```(NabPairing Proposal - https://github.com/nabaztag2018/pynab)```
+```(NabPairing Proposal - https://github.com/mtouzot/pynab)```
 
 * Acceptation
 
-```(NabPairing Acceptation - https://github.com/nabaztag2018/pynab)```
+```(NabPairing Acceptation - https://github.com/mtouzot/pynab)```
 
 * Rejection
 
-```(NabPairing Rejection - https://github.com/nabaztag2018/pynab)```
+```(NabPairing Rejection - https://github.com/mtouzot/pynab)```
 
 * Divorce
 
-```(NabPairing Divorce - https://github.com/nabaztag2018/pynab)```
+```(NabPairing Divorce - https://github.com/mtouzot/pynab)```
 
 * Ears
 
-```(NabPairing Ears <left> <right> - https://github.com/nabaztag2018/pynab)```
+```(NabPairing Ears <left> <right> - https://github.com/mtouzot/pynab)```
 
 ## Transitions ##
 

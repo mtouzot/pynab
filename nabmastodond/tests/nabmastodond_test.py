@@ -30,42 +30,42 @@ SPLIT_CONTENT = (
     '<p><span class="h-card"><a href="https://botsin.space/@nab'
     'aztag" class="u-url mention" rel="nofollow noopener" target="_blank">@'
     "<span>nabaztag</span></a></span> I think we should split. Can weskip t"
-    "he lawyers? (NabPairing Divorce - https://github.com/nabaztag2018/pyna"
+    "he lawyers? (NabPairing Divorce - https://github.com/mtouzot/pyna"
     "b)</p>"
 )
 REJECTION_CONTENT = (
     '<p><span class="h-card"><a href="https://botsin.space/'
     '@nabaztag" class="u-url mention" rel="nofollow noopener" target="_blan'
     'k">@<span>nabaztag</span></a></span> Sorry, I cannot be your spouse ri'
-    "ght now (NabPairing Rejection - https://github.com/nabaztag2018/pynab)"
+    "ght now (NabPairing Rejection - https://github.com/mtouzot/pynab)"
     "</p>"
 )
 EARS_4_6_CONTENT = (
     '<p><span class="h-card"><a href="https://botsin.space/@'
     'nabaztag" class="u-url mention" rel="nofollow noopener" target="_blank'
     "\">@<span>nabaztag</span></a></span> Let's dance (NabPairing Ears 4 6 "
-    "- https://github.com/nabaztag2018/pynab)</p>"
+    "- https://github.com/mtouzot/pynab)</p>"
 )
 PROPOSAL_CONTENT = (
     '<p><span class="h-card"><a href="https://botsin.space/@'
     'nabaztag" class="u-url mention" rel="nofollow noopener" target="_blank'
     '">@<span>nabaztag</span></a></span> Would you accept to be my spouse? '
-    "(NabPairing Proposal - https://github.com/nabaztag2018/pynab)</p>"
+    "(NabPairing Proposal - https://github.com/mtouzot/pynab)</p>"
 )
 ACCEPTATION_CONTENT = (
     '<p><span class="h-card"><a href="https://botsin.spac'
     'e/@nabaztag" class="u-url mention" rel="nofollow noopener" target="_bl'
     'ank">@<span>nabaztag</span></a></span> Oh yes, I do accept to be your '
-    "spouse (NabPairing Acceptation - https://github.com/nabaztag2018/pynab"
+    "spouse (NabPairing Acceptation - https://github.com/mtouzot/pynab"
     ")</p>"
 )
 ALTERNATE_ACCEPTATION_CONTENT = (
     '<p><span class="h-card"><a href="https://b'
     'otsin.space/@rostropovich" class="u-url mention" rel="nofollow noopene'
     'r" target="_blank">@<span>rostropovich</span></a></span> Yup! (NabPair'
-    'ing Acceptation - <a href="https://github.com/nabaztag2018/pynab" rel='
+    'ing Acceptation - <a href="https://github.com/mtouzot/pynab" rel='
     '"nofollow noopener" target="_blank"><span class="invisible">https://</'
-    'span><span class="">github.com/nabaztag2018/pynab</span><span class="i'
+    'span><span class="">github.com/mtouzot/pynab</span><span class="i'
     'nvisible"></span></a>)</p>'
 )
 
@@ -353,7 +353,7 @@ class TestMastodondPairingProtocolFree(TestMastodondPairingProtocol):
         self.assertEqual(len(self.posted_statuses), 1)
         self.assertEqual(self.posted_statuses[0]["visibility"], "direct")
         self.assertTrue(
-            "(NabPairing Divorce - https://github.com/nabaztag2018/pynab)"
+            "(NabPairing Divorce - https://github.com/mtouzot/pynab)"
             in self.posted_statuses[0]["content"]
         )
         self.assertTrue(
@@ -442,7 +442,7 @@ class TestMastodondPairingProtocolFree(TestMastodondPairingProtocol):
         self.assertEqual(len(self.posted_statuses), 1)
         self.assertEqual(self.posted_statuses[0]["visibility"], "direct")
         self.assertTrue(
-            "(NabPairing Divorce - https://github.com/nabaztag2018/pynab)"
+            "(NabPairing Divorce - https://github.com/mtouzot/pynab)"
             in self.posted_statuses[0]["content"]
         )
         self.assertTrue(
@@ -582,7 +582,7 @@ class TestMastodondPairingProtocolProposed(TestMastodondPairingProtocol):
         self.assertEqual(len(self.posted_statuses), 1)
         self.assertEqual(self.posted_statuses[0]["visibility"], "direct")
         self.assertTrue(
-            "(NabPairing Acceptation - https://github.com/nabaztag2018/pynab)"
+            "(NabPairing Acceptation - https://github.com/mtouzot/pynab)"
             in self.posted_statuses[0]["content"]
         )
         self.assertTrue(
@@ -623,7 +623,7 @@ class TestMastodondPairingProtocolProposed(TestMastodondPairingProtocol):
         self.assertEqual(len(self.posted_statuses), 1)
         self.assertEqual(self.posted_statuses[0]["visibility"], "direct")
         self.assertTrue(
-            "(NabPairing Divorce - https://github.com/nabaztag2018/pynab)"
+            "(NabPairing Divorce - https://github.com/mtouzot/pynab)"
             in self.posted_statuses[0]["content"]
         )
         self.assertTrue(
@@ -711,7 +711,7 @@ class TestMastodondPairingProtocolProposed(TestMastodondPairingProtocol):
         self.assertEqual(config.spouse_pairing_date, DATE_1)
         self.assertEqual(self.posted_statuses[0]["visibility"], "direct")
         self.assertTrue(
-            "(NabPairing Rejection - https://github.com/nabaztag2018/pynab)"
+            "(NabPairing Rejection - https://github.com/mtouzot/pynab)"
             in self.posted_statuses[0]["content"]
         )
         self.assertTrue(
@@ -773,7 +773,7 @@ class TestMastodondPairingProtocolProposed(TestMastodondPairingProtocol):
         self.assertEqual(len(self.posted_statuses), 1)
         self.assertEqual(self.posted_statuses[0]["visibility"], "direct")
         self.assertTrue(
-            "(NabPairing Divorce - https://github.com/nabaztag2018/pynab)"
+            "(NabPairing Divorce - https://github.com/mtouzot/pynab)"
             in self.posted_statuses[0]["content"]
         )
         self.assertTrue(
@@ -881,7 +881,7 @@ class TestMastodondPairingProtocolWaitingApproval(
         self.assertEqual(len(self.posted_statuses), 1)
         self.assertEqual(self.posted_statuses[0]["visibility"], "direct")
         self.assertTrue(
-            "(NabPairing Divorce - https://github.com/nabaztag2018/pynab)"
+            "(NabPairing Divorce - https://github.com/mtouzot/pynab)"
             in self.posted_statuses[0]["content"]
         )
         self.assertTrue(
@@ -945,7 +945,7 @@ class TestMastodondPairingProtocolWaitingApproval(
         self.assertEqual(config.spouse_pairing_date, DATE_2)
         self.assertEqual(self.posted_statuses[0]["visibility"], "direct")
         self.assertTrue(
-            "(NabPairing Rejection - https://github.com/nabaztag2018/pynab)"
+            "(NabPairing Rejection - https://github.com/mtouzot/pynab)"
             in self.posted_statuses[0]["content"]
         )
         self.assertTrue(
@@ -1035,7 +1035,7 @@ class TestMastodondPairingProtocolWaitingApproval(
         self.assertEqual(len(self.posted_statuses), 1)
         self.assertEqual(self.posted_statuses[0]["visibility"], "direct")
         self.assertTrue(
-            "(NabPairing Divorce - https://github.com/nabaztag2018/pynab)"
+            "(NabPairing Divorce - https://github.com/mtouzot/pynab)"
             in self.posted_statuses[0]["content"]
         )
         self.assertTrue(
@@ -1097,7 +1097,7 @@ class TestMastodondPairingProtocolWaitingApproval(
         self.assertEqual(len(self.posted_statuses), 1)
         self.assertEqual(self.posted_statuses[0]["visibility"], "direct")
         self.assertTrue(
-            "(NabPairing Divorce - https://github.com/nabaztag2018/pynab)"
+            "(NabPairing Divorce - https://github.com/mtouzot/pynab)"
             in self.posted_statuses[0]["content"]
         )
         self.assertTrue(
@@ -1218,7 +1218,7 @@ class TestMastodondPairingProtocolMarried(TestMastodondPairingProtocol):
         self.assertEqual(len(self.posted_statuses), 1)
         self.assertEqual(self.posted_statuses[0]["visibility"], "direct")
         self.assertTrue(
-            "(NabPairing Acceptation - https://github.com/nabaztag2018/pynab)"
+            "(NabPairing Acceptation - https://github.com/mtouzot/pynab)"
             in self.posted_statuses[0]["content"]
         )
         self.assertTrue(
@@ -1328,7 +1328,7 @@ class TestMastodondPairingProtocolMarried(TestMastodondPairingProtocol):
         self.assertEqual(config.spouse_pairing_date, DATE_1)
         self.assertEqual(self.posted_statuses[0]["visibility"], "direct")
         self.assertTrue(
-            "(NabPairing Rejection - https://github.com/nabaztag2018/pynab)"
+            "(NabPairing Rejection - https://github.com/mtouzot/pynab)"
             in self.posted_statuses[0]["content"]
         )
         self.assertTrue(
@@ -1366,7 +1366,7 @@ class TestMastodondPairingProtocolMarried(TestMastodondPairingProtocol):
         self.assertEqual(len(self.posted_statuses), 1)
         self.assertEqual(self.posted_statuses[0]["visibility"], "direct")
         self.assertTrue(
-            "(NabPairing Divorce - https://github.com/nabaztag2018/pynab)"
+            "(NabPairing Divorce - https://github.com/mtouzot/pynab)"
             in self.posted_statuses[0]["content"]
         )
         self.assertTrue(
@@ -1464,7 +1464,7 @@ class TestMastodondPairingProtocolMarried(TestMastodondPairingProtocol):
         self.assertEqual(len(self.posted_statuses), 1)
         self.assertEqual(self.posted_statuses[0]["visibility"], "direct")
         self.assertTrue(
-            "(NabPairing Divorce - https://github.com/nabaztag2018/pynab)"
+            "(NabPairing Divorce - https://github.com/mtouzot/pynab)"
             in self.posted_statuses[0]["content"]
         )
         self.assertTrue(
@@ -1531,7 +1531,7 @@ class TestMastodondEars(TestMastodondBase, MockMastodonClient):
         # self.assertEqual(len(self.posted_statuses), 1)
         self.assertEqual(self.posted_statuses[0]["visibility"], "direct")
         self.assertTrue(
-            "(NabPairing Ears 4 6 - https://github.com/nabaztag2018/pynab)"
+            "(NabPairing Ears 4 6 - https://github.com/mtouzot/pynab)"
             in self.posted_statuses[0]["content"]
         )
         self.assertTrue(

@@ -2,7 +2,7 @@ name: 🛠  Test upgrade
 on:
   push:
     branches:
-        - master
+        - main
         - release
         - releng
 

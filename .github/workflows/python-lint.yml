@@ -2,7 +2,7 @@ name: ✔️  Python lint
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
 
 jobs:

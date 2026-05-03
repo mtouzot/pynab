@@ -8,12 +8,12 @@ ensure the contribution process is easy and effective for everyone involved.
 
 ### Reporting bugs
 
-Please **Check [existing issues](https://github.com/nabaztag2018/pynab/issues)** to make sure the
+Please **Check [existing issues](https://github.com/mtouzot/pynab/issues)** to make sure the
 bug was not already reported. If you are running latest release, make sure the
-bug was not fixed on master branch by checking closed issues as well.
+bug was not fixed on main branch by checking closed issues as well.
 
 If you're unable to find an open issue addressing the problem,
-[open a new one](https://github.com/nabaztag2018/pynab/issues/new). Be sure to include as much
+[open a new one](https://github.com/mtouzot/pynab/issues/new). Be sure to include as much
 relevant information as possible, ideally providing a reproduceable test case
 demonstrating the expected behavior that is not occurring.
 
@@ -29,8 +29,8 @@ project and could simply exploit the [Nabd protocol](PROTOCOL.md) and be install
 
 If you intend to add a new feature or change an existing one, please engage
 discussion first about what you are proposing by filing
-[a new issue](https://github.com/nabaztag2018/pynab/issues/new) or discussing it on the
-[Discussions page](https://github.com/nabaztag2018/pynab/discussions).
+[a new issue](https://github.com/mtouzot/pynab/issues/new) or discussing it on the
+[Discussions page](https://github.com/mtouzot/pynab/discussions).
 
 ### Submitting patches
 
@@ -41,7 +41,7 @@ patches for existing issues / enhancements.
 ### Your first code contribution
 
 Unsure where to begin contributing to Pynab? You can start by looking at issues
-tagged [`good first issue`](https://github.com/nabaztag2018/pynab/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+tagged [`good first issue`](https://github.com/mtouzot/pynab/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 They have been especially selected as they seem not too difficult at first
 sight.
 
@@ -61,7 +61,7 @@ git remote add fork https://github.com/YOUR_GITHUB_USERNAME/pynab.git
 To develop your code, create a local branch with a name that makes sense.
 ```
 git fetch origin
-git checkout -b feature-name origin/master
+git checkout -b feature-name origin/main
 ```
 
 At anytime, you can run tests locally (on the rabbit) by first stopping pynab
@@ -81,7 +81,7 @@ Once you are happy with the result, rebase and push it to a dedicated branch on
 your own GitHub fork.
 ```
 git fetch origin
-git rebase origin/master
+git rebase origin/main
 git push fork HEAD:feature-name
 ```
 
@@ -103,10 +103,10 @@ and unit tests.
 If tests fail, fix them and push to the branch, either with new commits or
 by amending. Once tests pass, your request will be reviewed.
 
-At any time, if you did commit your changes, you can go back to master with:
+At any time, if you did commit your changes, you can go back to main with:
 ```
 git fetch origin
-git checkout master
+git checkout main
 bash upgrade.sh
 ```
 
@@ -115,7 +115,7 @@ messages, drivers and dependencies.
 
 ## How to test a contributor Pull Request
 
-1. Note the number *XXX* of the PR to test from the [Pull requests page](https://github.com/nabaztag2018/pynab/pulls).
+1. Note the number *XXX* of the PR to test from the [Pull requests page](https://github.com/mtouzot/pynab/pulls).
 
 2. Go to the pynab folder on your rabbit: `cd $HOME/pynab`
 
@@ -129,7 +129,7 @@ messages, drivers and dependencies.
 
 6. Do your tests...
 
-7. Switch back to default (master or release) branch: `git checkout master`
+7. Switch back to default (main or release) branch: `git checkout main`
 
 8. Rollback Pynab environment:
      - if needed (when PR had changes in drivers, dependencies, data models or localisation messages) do a full upgrade: `bash upgrade.sh`
