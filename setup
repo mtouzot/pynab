@@ -28,17 +28,20 @@ esac
 
 LC_ALL=C
 
-if [ -d "/boot/dietpi" ]
-then
+if [[ -f /boot/dietpi/.version ]]; then
     # DietPi distro
     distro="dietpi"
-elif [ -f "/etc/rpi-issue" ]
-then
-    # Raspberry Pi OS distro
+elif [[ -f /usr/bin/raspi-config ]]; then
     distro="raspios"
 else
-    echo "$(basename ${0}): unsupported Linux distribution!"
-    exit 3
+    ID=$(grep -E '^ID=' /etc/os-release | cut -d= -f2 | tr -d '"')
+    if [[ "$ID" == "debian" || "$ID_LIKE" == *"debian"* ]]; then
+        # Debian distro
+        distro="debian"
+    else
+        echo "$(basename ${0}): unsupported Linux distribution!"
+        exit 3
+    fi
 fi
 
 owner=$(getent passwd 1000 | cut -d: -f1)
@@ -125,11 +128,13 @@ then
     echo "service_name: Nabaztag" >> /etc/comitup.conf
     echo "external_callback: /opt/pynab/comitup-callback.sh" >> /etc/comitup.conf
 
-    if [ "${distro}" == "raspios"  ]
+    if [ "${distro}" == "raspios"  ] || [ "${distro}" == "debian" ]
     then
         # assume user will do any needed SD card configuration.
         echo "Disabling SSH (can be enabled by putting an ssh file in /boot/)"
-        sudo update-rc.d ssh disable
+        rm -f /boot/ssh || true
+        systemctl disable ssh 2>/dev/null || true
+        systemctl stop ssh 2>/dev/null || true
     elif [ "${distro}" == "dietpi" ]
     then
         echo "Setting DietPi 'first boot' parameters."
@@ -158,7 +163,7 @@ fi
 
 echo "Ensuring user ${owner} has appropriate sudo privileges."
 usermod -aG sudo ${owner}
-if [ "${distro}" == "raspios"  ]
+if [ "${distro}" == "raspios"  ] || [ "${distro}" == "debian" ]
 then
     echo "${owner} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/010_${owner}-nopasswd
 elif [ "${distro}" == "dietpi" ]
