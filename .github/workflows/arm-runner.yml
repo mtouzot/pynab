@@ -14,30 +14,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [zero_raspbian, zero_raspios, zero_dietpi, zero2_64_raspios]
+        target: [zero_raspios, zero2_64_raspios]
         include:
-        - target: zero_raspbian
-          cpu: arm1176
-          cpu_info: cpuinfo/raspberrypi_zero_w
-          base_image: raspbian_lite:latest
         - target: zero_raspios
           cpu: arm1176
           cpu_info: cpuinfo/raspberrypi_zero_w
           base_image: raspios_lite:2023-05-03
-        - target: zero_dietpi
-          cpu: arm1176
-          cpu_info: cpuinfo/raspberrypi_zero_w
-          base_image: dietpi:rpi_armv6_bullseye
         - target: zero2_64_raspios
           cpu: cortex-a53
           cpu_info: cpuinfo/raspberrypi_zero2_w_arm64
           base_image: raspios_lite_arm64:2023-05-03
     steps:
       - name: Checkout pynab
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Run test suite in chroot environment
-        uses: pguyot/arm-runner-action@v2
+        uses: mtouzot/arm-runner-action@v2.6.6
         id: arm_runner_tests
         with:
           image_additional_mb: 4096
@@ -68,27 +60,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [zero_raspbian, zero_raspios, zero_dietpi, zero2_64_raspios]
+        target: [zero_raspios, zero2_64_raspios]
         include:
-        - target: zero_raspbian
-          cpu: arm1176
-          cpu_info: cpuinfo/raspberrypi_zero_w
-          base_image: raspbian_lite:latest
         - target: zero_raspios
           cpu: arm1176
           cpu_info: cpuinfo/raspberrypi_zero_w
           base_image: raspios_lite:2023-05-03
-        - target: zero_dietpi
-          cpu: arm1176
-          cpu_info: cpuinfo/raspberrypi_zero_w
-          base_image: dietpi:rpi_armv6_bullseye
         - target: zero2_64_raspios
           cpu: cortex-a53
           cpu_info: cpuinfo/raspberrypi_zero2_w_arm64
           base_image: raspios_lite_arm64:2023-05-03
     steps:
       - name: Checkout pynab
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Define the image name
         id: image_and_branch_name
@@ -115,7 +99,7 @@ jobs:
           fi
 
       - name: Create a release image in chroot environment
-        uses: pguyot/arm-runner-action@v2
+        uses: mtouzot/arm-runner-action@v2.6.6
         id: arm_runner_install
         with:
           image_additional_mb: 4096
@@ -153,7 +137,7 @@ jobs:
           sudo xz -T 0 -v pynab-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img
 
       - name: Upload the image artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: pynab-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img.xz
           path: pynab-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img.xz
@@ -180,7 +164,7 @@ jobs:
           fi
 
       - name: Download the image artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v8
 
       - name: Create release with releng image
         if: github.ref == 'refs/heads/releng'

@@ -13,18 +13,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [pynab_091_zero, pynab_091_zero2, pynab_100_zero, pynab_100_zero2]
+        target: [pynab_100_zero, pynab_100_zero2, pynab_102_zero, pynab_102_zero2]
         include:
-        - target: pynab_091_zero
-          cpu: arm1176
-          cpu_info: cpuinfo/raspberrypi_zero_w
-          base_image: https://github.com/nabaztag2018/pynab/releases/download/v0.9.1/pynab-v0.9.1.img.xz
-          install_dir: /home/pi/pynab
-        - target: pynab_091_zero2
-          cpu: cortex-a7
-          cpu_info: cpuinfo/raspberrypi_zero2_w
-          base_image: https://github.com/nabaztag2018/pynab/releases/download/v0.9.1/pynab-v0.9.1.img.xz
-          install_dir: /home/pi/pynab
         - target: pynab_100_zero
           cpu: arm1176
           cpu_info: cpuinfo/raspberrypi_zero_w
@@ -35,10 +25,20 @@ jobs:
           cpu_info: cpuinfo/raspberrypi_zero2_w
           base_image: https://github.com/nabaztag2018/pynab/releases/download/v1.0.0/pynab-v1.0.0-zero_raspbian.img.xz
           install_dir: /opt/pynab
+        - target: pynab_102_zero
+          cpu: arm1176
+          cpu_info: cpuinfo/raspberrypi_zero_w
+          base_image: https://github.com/nabaztag2018/pynab/releases/download/v1.0.2/pynab-v1.0.2-zero_raspbian.img.xz
+          install_dir: /opt/pynab
+        - target: pynab_102_zero2
+          cpu: cortex-a7
+          cpu_info: cpuinfo/raspberrypi_zero2_w
+          base_image: https://github.com/nabaztag2018/pynab/releases/download/v1.0.2/pynab-v1.0.2-zero_raspbian.img.xz
+          install_dir: /opt/pynab
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Run test script in chroot environment
-        uses: pguyot/arm-runner-action@v2
+        uses: mtouzot/arm-runner-action@v2.6.6
         id: arm_runner_tests
         with:
           image_additional_mb: 4096

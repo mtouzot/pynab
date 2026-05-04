@@ -44,23 +44,12 @@ case $step in
       git pull
     fi
 
-<<<<<<< HEAD
-    case $ci_chroot_test in
-      "ci-chroot-test")
-        bash upgrade.sh "install" ci_chroot_test
-        ;;
-      "")
-        echo "Upgrade complete"
-        ;;
-    esac
-=======
     if printf '%s\n' "${forward_args[@]}" | grep -q "ci-chroot"; then
       bash upgrade.sh --install "${forward_args[@]}"
     else
       bash upgrade.sh --install 
     fi
     echo "Upgrade complete"
->>>>>>> 0fcb5df (tmp)
     ;;
   "install")
     cd ${root_dir}

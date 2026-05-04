@@ -16,17 +16,15 @@ Les schémas et fichiers de fabrication de ces deux cartes sont dans le reposito
 
 ### Nabaztag 2018 releases
 
-Les [releases](https://github.com/nabaztag2018/pynab/releases) sont des images de [Raspberry Pi OS](https://www.raspberrypi.org/software/operating-systems/) Lite ou [DietPi](https://dietpi.com/) avec Pynab pré-installé.
+Les [releases](https://github.com/nabaztag2018/pynab/releases) sont des images de [Raspberry Pi OS](https://www.raspberrypi.org/software/operating-systems/) Lite.
 
 Les releases actuelles (>0.7.x) ne fonctionnent pas sur les cartes 2018 (cf [#44](https://github.com/nabaztag2018/pynab/issues/44)).
 
-## Installation sur Raspberry Pi OS ou DietPi (pour développeurs!)
+## Installation sur Raspberry Pi OS
 
 ### 0. S'assurer que le système est bien à jour
 
 Le script d'installation requiert une version basée sur Debian 11 (Bullseye), avec Python 3.9.
-
-Debian 10 (Buster), avec Python 3.7 ([Raspberry Pi OS Legacy](https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-legacy)), est aussi supporté.
 
 Il est nécessaire que les 'kernel headers' installés via `apt-get` correspondent à la version installée du noyau.
 
@@ -90,6 +88,8 @@ Si nécessaire, il est possible de le faire en ligne de commande avec :
 cd pynab
 bash upgrade.sh
 ```
+
+La mise à jour est possible depuis les versions Raspbian [1.0.0](https://github.com/nabaztag2018/pynab/releases/tag/v1.0.0) et [1.0.2](https://github.com/nabaztag2018/pynab/releases/tag/v1.0.2) du projet [pynab](https://github.com/nabaztag2018/pynab) original.
 
 ## NabBlockly
 

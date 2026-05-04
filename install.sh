@@ -248,10 +248,8 @@ fi
 cd ${root_dir}
 if [ -x "$(command -v python3.9)" ] ; then
   py_ver=3.9
-elif [ -x "$(command -v python3.7)" ] ; then
-  py_ver=3.7
 else
-  echo "Please install Python 3.7 or 3.9 (you might need to upgrade your Linux distribution)"
+  echo "Please install Python 3.9 (you might need to upgrade your Linux distribution)"
   exit 1
 fi
 python=python${py_ver}
