@@ -145,6 +145,10 @@ class NabWeatherd(NabInfoService):
             "rainy",
             RAINY_INFO_ANIMATION,
         ),
+        "Averses faibles": (
+            "rainy",
+            RAINY_INFO_ANIMATION,
+        ),
         "Pluies éparses": (
             "rainy",
             RAINY_INFO_ANIMATION,
