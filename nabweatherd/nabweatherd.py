@@ -133,6 +133,7 @@ class NabWeatherd(NabInfoService):
         "Eclaircies": ("sunny", SUNNY_INFO_ANIMATION),
         "Peu nuageux": ("sunny", SUNNY_INFO_ANIMATION),
         "Ensoleillé": ("sunny", SUNNY_INFO_ANIMATION),
+        "Ciel clair": ("sunny", SUNNY_INFO_ANIMATION),
         "Ciel voilé": ("cloudy", CLOUDY_INFO_ANIMATION),
         "Ciel voilé nuit": ("cloudy", CLOUDY_INFO_ANIMATION),
         "Très nuageux": ("cloudy", CLOUDY_INFO_ANIMATION),
