@@ -196,6 +196,10 @@ class NabWeatherd(NabInfoService):
             "snowy",
             SNOWY_INFO_ANIMATION,
         ),
+        "Neige faible": (
+            "snowy",
+            SNOWY_INFO_ANIMATION,
+        ),
         "Neige forte": (
             "snowy",
             SNOWY_INFO_ANIMATION,
