@@ -41,6 +41,9 @@ jobs:
           python-version: ${{ matrix.python }}
           cache: 'pip'
 
+      - name: Install requirements
+        run: pip install --no-build-isolation -r requirements.txt
+
       - name: Install dependencies
         run: |
           sudo apt update -y
@@ -51,9 +54,6 @@ jobs:
           sudo ldconfig
           python -m pip install --upgrade pip setuptools wheel
           pip install Cython==0.29.30 numpy==1.21.4 setuptools_rust
-
-      - name: Install requirements
-        run: pip install --no-build-isolation -r requirements.txt
 
       - name: Install kaldi models
         run: |
