@@ -93,7 +93,7 @@ scikit_learn==0.24.2
 deprecation==2.1.0
 pyaml==19.12.0
 # Latest future compatible with latest snips-nlu
-future==1.0.0
+future==0.17.1
 sklearn_crfsuite==0.3.6
 zipp==3.19.1
 certifi==2024.7.4
