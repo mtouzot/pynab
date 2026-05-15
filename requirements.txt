@@ -49,7 +49,7 @@ ndef==0.2
 
 # Indirect frozen dependencies
 mypy_extensions==0.4.3
-typing_extensions==4.7.1
+typing_extensions>=4.13.2
 pathspec==0.9.0
 toml==0.10.2
 appdirs==1.4.4
