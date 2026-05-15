@@ -28,17 +28,20 @@ esac
 
 LC_ALL=C
 
-if [ -d "/boot/dietpi" ]
-then
+if [[ -f /boot/dietpi/.version ]]; then
     # DietPi distro
     distro="dietpi"
-elif [ -f "/etc/rpi-issue" ]
-then
-    # Raspberry Pi OS distro
+elif [[ -f /usr/bin/raspi-config ]]; then
     distro="raspios"
 else
-    echo "$(basename ${0}): unsupported Linux distribution!"
-    exit 3
+    ID=$(grep -E '^ID=' /etc/os-release | cut -d= -f2 | tr -d '"')
+    if [[ "$ID" == "debian" || "$ID_LIKE" == *"debian"* ]]; then
+        # Debian distro
+        distro="debian"
+    else
+        echo "$(basename ${0}): unsupported Linux distribution!"
+        exit 3
+    fi
 fi
 
 owner=$(getent passwd 1000 | cut -d: -f1)
@@ -77,7 +80,7 @@ cat "/boot/cmdline.txt"
 # Replace /etc/fstab since the non existing PARTUUID has to be changed here as well.
 echo "Editing /etc/fstab."
 sed -i -e "s|PARTUUID=........-01|/dev/mmcblk0p1|" -e "s|PARTUUID=........-02|/dev/mmcblk0p2|" /etc/fstab
-cat "/etc/fstab" | grep "^/dev/"
+grep "^/dev/" /etc/fstab || true
 
 echo "Setting gpu_mem."
 GPU_MEM=16
@@ -108,9 +111,9 @@ cat /boot/config.txt | grep "dtoverlay=hifiberry-dac"
 if [ "${install_env}" == "ci-chroot" ]
 then
     # Install comitup package for headless WiFi setup
-    wget https://davesteele.github.io/comitup/deb/davesteele-comitup-apt-source_1.2_all.deb
-    dpkg -i --force-all davesteele-comitup-apt-source_1.2_all.deb
-    rm davesteele-comitup-apt-source_1.2_all.deb
+    wget https://davesteele.github.io/comitup/deb/davesteele-comitup-apt-source_1.3_all.deb
+    dpkg -i --force-all davesteele-comitup-apt-source_1.3_all.deb
+    rm davesteele-comitup-apt-source_1.3_all.deb
     apt-get update -y
     apt-get install --no-install-recommends -y comitup comitup-watch
     rm /etc/network/interfaces
@@ -125,11 +128,13 @@ then
     echo "service_name: Nabaztag" >> /etc/comitup.conf
     echo "external_callback: /opt/pynab/comitup-callback.sh" >> /etc/comitup.conf
 
-    if [ "${distro}" == "raspios"  ]
+    if [ "${distro}" == "raspios"  ] || [ "${distro}" == "debian" ]
     then
         # assume user will do any needed SD card configuration.
         echo "Disabling SSH (can be enabled by putting an ssh file in /boot/)"
-        sudo update-rc.d ssh disable
+        rm -f /boot/ssh || true
+        systemctl disable ssh 2>/dev/null || true
+        systemctl stop ssh 2>/dev/null || true
     elif [ "${distro}" == "dietpi" ]
     then
         echo "Setting DietPi 'first boot' parameters."
@@ -158,7 +163,7 @@ fi
 
 echo "Ensuring user ${owner} has appropriate sudo privileges."
 usermod -aG sudo ${owner}
-if [ "${distro}" == "raspios"  ]
+if [ "${distro}" == "raspios"  ] || [ "${distro}" == "debian" ]
 then
     echo "${owner} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/010_${owner}-nopasswd
 elif [ "${distro}" == "dietpi" ]
@@ -237,8 +242,17 @@ cd ${inst_dir}/pynab
 sudo -u ${owner} git clone --depth 1 -b ${driver_branch} https://github.com/pguyot/nabblockly
 sudo git config --system --add safe.directory ${inst_dir}/pynab/nabblockly
 cd ${inst_dir}/pynab/nabblockly
-# Until we can get OTP 24 from Raspian or Erlang Solutions, get an older rebar binary
-sudo -u ${owner} wget https://github.com/erlang/rebar3/releases/download/3.15.1/rebar3 && chmod +x rebar3
+OTP=$(erl -noshell -eval 'io:format("~s", [erlang:system_info(otp_release)]), halt().')
+# Select rebar3 version based on OTP version, since older rebar3 versions don't support newer OTP versions and newer rebar3 versions don't support older OTP versions.
+if [ "$OTP" -gt 25 ]; then
+    REBAR_VERSION="3.25.1"
+elif [ "$OTP" -ge 23 ] && [ "$OTP" -le 25 ]; then
+    REBAR_VERSION="3.20.0"
+else
+    REBAR_VERSION="3.15.2"
+fi
+REBAR_URL="https://github.com/erlang/rebar3/releases/download/${REBAR_VERSION}/rebar3"
+sudo -u ${owner} bash -c "wget -q $REBAR_URL -O rebar3 && chmod +x rebar3"
 sudo apt-get install --no-install-recommends -y g++
 sudo -u ${owner} ./rebar3 release
 

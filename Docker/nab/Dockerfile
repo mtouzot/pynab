@@ -1,4 +1,4 @@
-FROM python:3.7-bullseye
+FROM python:3.9-bullseye
 
 RUN apt-get update && apt-get install -y \
     postgresql-client gettext \
@@ -38,7 +38,7 @@ USER tagtagtag
 WORKDIR /opt/pynab
 
 ENV VIRTUAL_ENV=/opt/venv
-RUN python3.7 -m venv ${VIRTUAL_ENV}
+RUN python3.9 -m venv ${VIRTUAL_ENV}
 ENV PATH=${VIRTUAL_ENV}/bin:${PATH}
 
 COPY requirements.txt /tmp/requirements.txt

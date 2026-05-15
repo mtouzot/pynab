@@ -21,24 +21,33 @@ if [ "${1:-}" == "--makerfaire2018" ]; then
   shift
 fi
 
-if [ "${1:-}" == "ci-chroot" ]; then
-  ci_chroot=1
-elif [ "${1:-}" == "ci-chroot-test" ]; then
-  ci_chroot=1
-  test=1
-elif [ "${1:-}" == "test" ]; then
-  test=1
-elif [ "${1:-}" == "--upgrade" ]; then
-  upgrade=1
-  # auto-detect Maker Faire card here.
-  if [ `sudo aplay -L | grep -c "hifiberry"` -gt 0 ]; then
-    makerfaire2018=1
-  fi
-fi
+for arg in "$@"; do
+  case "$arg" in
+    ci-chroot)
+      ci_chroot=1
+      ;;
+    test)
+      test=1
+      ;;
+    ci-chroot-test)
+      ci_chroot=1
+      test=1
+      ;;
+    --upgrade)
+      upgrade=1
+    if [ `sudo aplay -L | grep -c "hifiberry"` -gt 0 ]; then
+      makerfaire2018=1
+      fi
+      ;;
+    *)
+      echo "Warning: unknown argument '$arg' ignored" >&2
+      ;;
+  esac
+done
 
 model=$(grep "^Model" /proc/cpuinfo ; true)
-if [[ ! "$model" == *"Raspberry Pi Zero"* ]]; then
-  # not a Pi Zero or Zero 2
+if [[ $ci_chroot -ne 1 ]] && [ ! "$model" == *"Raspberry Pi Zero"* ]; then
+  # not the CI and not a Pi Zero or Zero 2
   echo "Installation only planned on Raspberry Pi Zero, will cowardly exit"
   exit 1
 fi
@@ -190,7 +199,7 @@ if [ $makerfaire2018 -eq 0 ]; then
   fi
 
   # Maker Faire card has no mic, no need to install Kaldi
-  kaldi_release="e4940d045"
+  kaldi_release="0ff452b"
   kaldi_dir="/opt/kaldi"; kaldi_pkgconfig="/usr/lib/pkgconfig/kaldi-asr.pc"
   if [[ -f "${kaldi_pkgconfig}" && "$(grep -c ${kaldi_release} ${kaldi_pkgconfig})" -eq 0 ]]; then
      # Installed Kaldi does not match needed version: remove it
@@ -239,10 +248,8 @@ fi
 cd ${root_dir}
 if [ -x "$(command -v python3.9)" ] ; then
   py_ver=3.9
-elif [ -x "$(command -v python3.7)" ] ; then
-  py_ver=3.7
 else
-  echo "Please install Python 3.7 or 3.9 (you might need to upgrade your Linux distribution)"
+  echo "Please install Python 3.9 (you might need to upgrade your Linux distribution)"
   exit 1
 fi
 python=python${py_ver}

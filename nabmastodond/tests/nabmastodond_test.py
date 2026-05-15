@@ -1669,6 +1669,7 @@ class TestSendDM(unittest.TestCase, TestMastodonClientBase):
     def tearDown(self):
         TestMastodonClientBase.tearDown(self)
 
+    @pytest.mark.xfail(reason="Mastodon instance closed")
     def test_connect_send_dm(self):
         user1_mastodon_client = Mastodon(
             client_id=self.client_id,
@@ -1713,6 +1714,7 @@ class TestMastodonClientProposal(TestMastodondBase, TestMastodonClientBase):
         TestMastodonClientBase.tearDown(self)
         close_old_async_connections()
 
+    @pytest.mark.xfail(reason="Mastodon instance closed")
     def test_mastodon_client_alter_proposal_before_start(self):
         config = models.Config.load()
         config.last_processed_status_date = DATE_1
@@ -1737,6 +1739,7 @@ class TestMastodonClientProposal(TestMastodondBase, TestMastodonClientBase):
         self.assertEqual(config.spouse_pairing_state, "waiting_approval")
         self.assertEqual(config.spouse_pairing_date, proposal_toot.created_at)
 
+    @pytest.mark.xfail(reason="Mastodon instance closed")
     def test_mastodon_client_alter_proposal_after_start(self):
         config = models.Config.load()
         config.last_processed_status_date = DATE_1
