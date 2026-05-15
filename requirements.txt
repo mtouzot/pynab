@@ -97,7 +97,7 @@ future==1.0.0
 sklearn_crfsuite==0.3.6
 zipp==3.19.1
 certifi==2024.7.4
-urllib3==2.7.0
+urllib3>=1.26.18,<2.0.0
 types_urllib3==1.26.15
 charset_normalizer==2.0.12
 idna==3.7
