@@ -104,7 +104,7 @@ idna==3.7
 execnet==1.9.0
 pyparsing==3.0.7
 platformdirs>=3.9.1,<5
-distlib==0.3.4
+distlib>=0.3.7,<1
 filelock==3.19.1
 docopt==0.6.2
 joblib==1.2.0
