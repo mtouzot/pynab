@@ -133,6 +133,7 @@ class NabWeatherd(NabInfoService):
         "Eclaircies": ("sunny", SUNNY_INFO_ANIMATION),
         "Peu nuageux": ("sunny", SUNNY_INFO_ANIMATION),
         "Ensoleillé": ("sunny", SUNNY_INFO_ANIMATION),
+        "Ciel clair": ("sunny", SUNNY_INFO_ANIMATION),
         "Ciel voilé": ("cloudy", CLOUDY_INFO_ANIMATION),
         "Ciel voilé nuit": ("cloudy", CLOUDY_INFO_ANIMATION),
         "Très nuageux": ("cloudy", CLOUDY_INFO_ANIMATION),
@@ -142,6 +143,10 @@ class NabWeatherd(NabInfoService):
             RAINY_INFO_ANIMATION,
         ),
         "Averses": (
+            "rainy",
+            RAINY_INFO_ANIMATION,
+        ),
+        "Averses faibles": (
             "rainy",
             RAINY_INFO_ANIMATION,
         ),
@@ -187,6 +192,14 @@ class NabWeatherd(NabInfoService):
             "snowy",
             SNOWY_INFO_ANIMATION,
         ),
+        "Averses de neige faible": (
+            "snowy",
+            SNOWY_INFO_ANIMATION,
+        ),
+        "Neige faible": (
+            "snowy",
+            SNOWY_INFO_ANIMATION,
+        ),
         "Neige forte": (
             "snowy",
             SNOWY_INFO_ANIMATION,
@@ -215,6 +228,10 @@ class NabWeatherd(NabInfoService):
             "foggy",
             FOGGY_INFO_ANIMATION,
         ),
+        "Brouillard dense": (
+            "foggy",
+            FOGGY_INFO_ANIMATION,
+        ),
         "Brouillard givrant": (
             "foggy",
             FOGGY_INFO_ANIMATION,
@@ -227,6 +244,7 @@ class NabWeatherd(NabInfoService):
         "Pluie orageuses": ("stormy", STORMY_INFO_ANIMATION),
         "Orages": ("stormy", STORMY_INFO_ANIMATION),
         "Averses orageuses": ("stormy", STORMY_INFO_ANIMATION),
+        "Orage avec grêle": ("stormy", STORMY_INFO_ANIMATION),
         "Risque d'orages": ("stormy", STORMY_INFO_ANIMATION),
     }
 
