@@ -1,4 +1,5 @@
 import datetime
+from enum import Enum
 from typing import Any, Dict, List, Literal, TypedDict, Union
 
 # =========================
@@ -13,7 +14,13 @@ Color = Union[PaletteColor, HTMLColor]
 Resources = str
 NLUIntent = Dict[str, Any]
 
-StateName = Literal["asleep", "idle", "interactive", "playing", "recording"]
+
+class StateName(str, Enum):
+    IDLE = "idle"
+    ASLEEP = "asleep"
+    INTERACTIVE = "interactive"
+    PLAYING = "playing"
+    RECORDING = "recording"
 
 
 # =========================
@@ -212,12 +219,9 @@ class ResponseGestaltPacket(ResponseBase, total=False):
 # =========================
 
 
-class EventBase(BasePacket):
-    time: float
-
-
-class ASREventPacket(EventBase):
+class ASREventPacket(TypedDict):
     type: Literal["asr_event"]
+    time: float
     nlu: NLUIntent
 
 
@@ -232,24 +236,28 @@ ButtonEventType = Literal[
 ]
 
 
-class ButtonEventPacket(EventBase):
+class ButtonEventPacket(TypedDict):
     type: Literal["button_event"]
+    time: float
     event: ButtonEventType
 
 
-class EarEventPacket(EventBase):
+class EarEventPacket(TypedDict):
     type: Literal["ear_event"]
+    time: float
     ear: Literal["left", "right"]
 
 
-class EarsEventPacket(EventBase):
+class EarsEventPacket(TypedDict):
     type: Literal["ears_event"]
+    time: float
     left: int
     right: int
 
 
-class RfidEventPacket(EventBase, total=False):
+class RfidEventPacket(TypedDict, total=False):
     type: Literal["rfid_event"]
+    time: float
     tech: str
     uid: str
     event: Literal["removed", "detected"]

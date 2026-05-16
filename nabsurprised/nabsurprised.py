@@ -3,7 +3,7 @@ import random
 import sys
 
 from nabcommon.nabservice import NabRandomService
-from nabcommon.typing import NabdPacket
+from nabcommon.typing import ASREventPacket, RfidEventPacket
 
 from . import rfid_data
 
@@ -90,17 +90,19 @@ class NabSurprised(NabRandomService):
                 NabSurprised.FREQUENCY_SECONDS[NabSurprised.RARELY],
             )  # nosec B311
 
-    async def process_nabd_packet(self, packet: NabdPacket):
-        if packet["type"] == "asr_event":
-            intent = packet["nlu"]["intent"]
+    async def _handle_asr_forecast(self, packet: ASREventPacket) -> None:
+        nlu = packet.get("nlu", {})
+
+        intent = nlu.get("intent")
+        if intent in NabSurprised.NLU_INTENTS:
             if intent in NabSurprised.NLU_INTENTS:
                 _, type = intent.split("/")
                 await self._do_perform(None, None, type)
-        elif (
-            packet["type"] == "rfid_event"
-            and packet["app"] == "nabsurprised"
-            and packet["event"] == "detected"
-        ):
+
+    async def _handle_rfid_event(self, packet: RfidEventPacket) -> None:
+        rfid_event = packet.get("event", "removed")
+        app = packet.get("app", "")
+        if rfid_event == "detected" and app == "nabsurprised":
             if "data" in packet:
                 lang, type = rfid_data.unserialize(
                     packet["data"].encode("utf8")

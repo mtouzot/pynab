@@ -8,7 +8,7 @@ from dateutil import tz
 from meteofrance_api.client import MeteoFranceClient, Place
 
 from nabcommon.nabservice import NabInfoService
-from nabcommon.typing import NabdPacket
+from nabcommon.typing import ASREventPacket, RfidEventPacket
 
 from . import rfid_data
 
@@ -595,27 +595,24 @@ class NabWeatherd(NabInfoService):
 
         await self.perform_additional(expiration, type, info_data, config)
 
-    async def process_nabd_packet(self, packet: NabdPacket):
+    async def _handle_asr_forecast(self, packet: ASREventPacket) -> None:
+        nlu = packet.get("nlu", {})
 
-        if (
-            packet["type"] == "asr_event"
-            and packet["nlu"]["intent"] == "nabweatherd/forecast"
-        ):
-            if "date" in packet["nlu"] and packet["nlu"]["date"][
-                :10
-            ] != datetime.datetime.now().strftime("%Y-%m-%d"):
-                type = "tomorrow"
-            else:
-                type = "today"
-            logging.debug(f"ASR triggered forecast for {type}")
-            await self._do_perform(type)
-        elif (
-            packet["type"] == "rfid_event"
-            and packet["app"] == "nabweatherd"
-            and packet["event"] == "detected"
-        ):
-            if "data" in packet:
-                type = rfid_data.unserialize(packet["data"].encode("utf8"))
+        if nlu.get("intent") != "nabweatherd/forecast":
+            return
+
+        today_str = datetime.datetime.now().strftime("%Y-%m-%d")
+        type = "tomorrow" if nlu.get("date", "")[:10] != today_str else "today"
+        logging.debug(f"ASR triggered forecast for {type}")
+        await self._do_perform(type)
+
+    async def _handle_rfid_forecast(self, packet: RfidEventPacket) -> None:
+        rfid_event = packet.get("event", "removed")
+        app = packet.get("app", "")
+        data = packet.get("data", None)
+        if (app == "nabweatherd") and (rfid_event == "detected"):
+            if data is not None:
+                type = rfid_data.unserialize(data.encode("utf8"))
             else:
                 type = "today"
             logging.debug(f"RFID triggered forecast for {type}")

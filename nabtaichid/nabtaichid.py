@@ -3,7 +3,7 @@ import random
 import sys
 
 from nabcommon.nabservice import NabRandomService
-from nabcommon.typing import NabdPacket
+from nabcommon.typing import ASREventPacket, RfidEventPacket
 
 
 class NabTaichid(NabRandomService):
@@ -34,19 +34,20 @@ class NabTaichid(NabRandomService):
     def compute_random_delta(self, frequency):
         return (256 - frequency) * 60 * (random.uniform(0, 255) + 64) / 128
 
-    async def process_nabd_packet(self, packet: NabdPacket):
-        if (
-            packet["type"] == "asr_event"
-            and packet["nlu"]["intent"] == "nabtaichid/taichi"
-        ):
-            now = datetime.datetime.now(datetime.timezone.utc)
-            expiration = now + datetime.timedelta(minutes=1)
-            await self.perform(expiration, None, None)
-        elif (
-            packet["type"] == "rfid_event"
-            and packet["app"] == "nabtaichid"
-            and packet["event"] == "detected"
-        ):
+    async def _handle_asr_forecast(self, packet: ASREventPacket) -> None:
+        nlu = packet.get("nlu", {})
+
+        if nlu.get("intent") != "nabtaichid/taichi":
+            return
+
+        now = datetime.datetime.now(datetime.timezone.utc)
+        expiration = now + datetime.timedelta(minutes=1)
+        await self.perform(expiration, None, None)
+
+    async def _handle_rfid_forecast(self, packet: RfidEventPacket) -> None:
+        rfid_event = packet.get("event", "removed")
+        app = packet.get("app", "")
+        if (app == "nabtaichid") and (rfid_event == "detected"):
             now = datetime.datetime.now(datetime.timezone.utc)
             expiration = now + datetime.timedelta(minutes=1)
             await self.perform(expiration, None, None)
