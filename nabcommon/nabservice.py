@@ -11,7 +11,7 @@ import time
 import traceback
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, List, Optional, Tuple, cast
+from typing import Any, List, Optional, Tuple
 
 from lockfile import AlreadyLocked, LockFailed  # type: ignore
 from lockfile.pidlockfile import PIDLockFile  # type: ignore

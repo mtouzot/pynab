@@ -33,11 +33,12 @@ from nabcommon.typing import (
     MessagePacket,
     ModePacket,
     NabdPacket,
+    ResponseCanceledPacket,
     ResponseErrorPacketProto,
-    ResponseExpiredPacketProto,
-    ResponseFailurePacketProto,
+    ResponseExpiredPacket,
+    ResponseFailurePacket,
     ResponseGestaltPacketProto,
-    ResponseOKPacketProto,
+    ResponseOKPacket,
     ResponsePacket,
     ResponsePacketProto,
     RfidWritePacket,
@@ -63,10 +64,19 @@ _PYTEST = os.path.basename(sys.argv[0]) != "nabd.py"
 
 IdleQueueItem = Tuple[ServicePacket, asyncio.StreamWriter]
 
-STATUS_EXPIRED = cast(ResponseExpiredPacketProto, {"status": "expired"})
-STATUS_OK = cast(ResponseOKPacketProto, {"status": "ok"})
-STATUS_CANCELED = cast(ResponseOKPacketProto, {"status": "canceled"})
-STATUS_FAILURE = cast(ResponseFailurePacketProto, {"status": "failure"})
+STATUS_EXPIRED: ResponseExpiredPacket = {
+    "type": "response",
+    "status": "expired",
+}
+STATUS_OK: ResponseOKPacket = {"type": "response", "status": "ok"}
+STATUS_CANCELED: ResponseCanceledPacket = {
+    "type": "response",
+    "status": "canceled",
+}
+STATUS_FAILURE: ResponseFailurePacket = {
+    "type": "response",
+    "status": "failure",
+}
 
 
 def status_error(
@@ -1184,7 +1194,7 @@ class Nabd:
             app_str = self._get_rfid_app(app)
             packet["app"] = app_str
             if app_data is not None:
-                app_data_str_bin = app_data.split(b"\xFF", 1)[0]
+                app_data_str_bin = app_data.split(b"\xff", 1)[0]
                 app_data_str = app_data_str_bin.decode("utf8")
                 packet["data"] = app_data_str
             event_type = "rfid/" + app_str
