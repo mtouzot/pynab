@@ -2,11 +2,29 @@
 line-length = 79
 
 [tool.mypy]
-plugins = ["mypy_django_plugin.main"]
-exclude = [
-    "migrations"
-]
+python_version = 3.9
+ignore_missing_imports = true
+follow_imports = "silent"
+exclude = '(^|/)(migrations|\.venv|build|dist)/'
 namespace_packages = true
+plugins = ["mypy_django_plugin.main"]
+disallow_any_generics = false
+disallow_subclassing_any = false
+warn_return_any = false
+warn_unused_ignores = true
+check_untyped_defs = true
+allow_untyped_globals = true
+
+[[tool.mypy.overrides]]
+module = "*.migrations.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "migrations.*"
+ignore_errors = true
 
 [tool.django-stubs]
+django_settings_module = "nabweb.settings"
+
+[mypy.plugins.django-stubs]
 django_settings_module = "nabweb.settings"

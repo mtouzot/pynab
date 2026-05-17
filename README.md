@@ -1,8 +1,16 @@
 # Nabaztag en Python pour Raspberry Pi
 
-[![build (qemu)](https://github.com/mtouzot/pynab/actions/workflows/arm-runner.yml/badge.svg?branch=main)](https://github.com/mtouzot/pynab/actions/workflows/arm-runner.yml)
 [![tests](https://github.com/mtouzot/pynab/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/mtouzot/pynab/actions/workflows/tests.yml)
+[![build (raspberry pi)](https://github.com/mtouzot/pynab/actions/workflows/arm-runner.yml/badge.svg?branch=main)](https://github.com/mtouzot/pynab/actions/workflows/arm-runner.yml)
+![coverage](https://codecov.io/gh/mtouzot/pynab/branch/main/graph/badge.svg)
+
+![lint](https://github.com/mtouzot/pynab/actions/workflows/python-lint.yml/badge.svg)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+![release](https://img.shields.io/github/v/release/mtouzot/pynab)
+![python](https://img.shields.io/badge/python-3.9-blue)
+
+![license](https://img.shields.io/github/license/mtouzot/pynab)
 
 ## Cartes
 

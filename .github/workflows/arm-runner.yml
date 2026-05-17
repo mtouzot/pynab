@@ -54,6 +54,18 @@ jobs:
             # And it also fails with aarch64 binaries of postgresql.
             sudo -u pi taskset -c 0 /bin/bash /opt/pynab/install.sh ci-chroot-test
 
+      - name: Retrieve coverage file
+        run: |
+          cp ${{ steps.arm_runner_tests.outputs.image_mount_path }}/opt/pynab/coverage.xml ./coverage-${{ matrix.target }}.xml || true
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage-*.xml
+          fail_ci_if_error: true
+          flags: unittests-${{ matrix.target }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+
   create_image:
     name: Build image
     runs-on: ubuntu-latest

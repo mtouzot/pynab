@@ -11,14 +11,21 @@ import time
 import traceback
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, List, Optional, Tuple, cast
+from typing import Any, List, Optional, Tuple
 
 from lockfile import AlreadyLocked, LockFailed  # type: ignore
 from lockfile.pidlockfile import PIDLockFile  # type: ignore
 
-from nabcommon import nablogging, settings
+from nabcommon import nablogging, nabpacketrouter, nabregistry, settings
 
-from .typing import NabdPacket
+from .typing import (
+    NabdPacket,
+    ASREventPacket,
+    ButtonEvenPacket,
+    EarEventPacket,
+    EarsEventPacket,
+    RfidEventPacket,
+)
 
 
 class NabService(ABC):
@@ -31,7 +38,54 @@ class NabService(ABC):
         self.writer = None
         self.loop = None
         self.running = True
+        self.registry = nabregistry.NabRegistry()
+        self.router = nabpacketrouter.NabPacketRouter(self.registry)
         signal.signal(signal.SIGUSR1, self.signal_handler)
+
+    def register_handlers(self):
+        """
+        Register handlers for NabdPackets object, if any.
+        """
+
+        @self.registry.register("asr_event")
+        async def handle_asr(packet: ASREventPacket):
+            await self._handle_asr_forecast(packet)
+
+        @self.registry.register("button_event")
+        async def handle_button(packet: ButtonEvenPacket):
+            await self._handle_button_event(packet)
+
+        @self.registry.register("ear_event")
+        async def handle_ear(packet: EarEventPacket):
+            await self._handle_ear_event(packet)
+
+        @self.registry.register("ears_event")
+        async def handle_ears(packet: EarsEventPacket):
+            await self._handle_ears_event(packet)
+
+        @self.registry.register("rfid_event")
+        async def handle_rfid(packet: RfidEventPacket):
+            await self._handle_rfid_forecast(packet)
+
+    @abstractmethod
+    async def _handle_asr_forecast(self, packet: ASREventPacket):
+        pass
+
+    @abstractmethod
+    async def _handle_button_event(self, packet: ButtonEvenPacket):
+        pass
+
+    @abstractmethod
+    async def _handle_ear_event(self, packet: EarEventPacket):
+        pass
+
+    @abstractmethod
+    async def _handle_ears_event(self, packet: EarsEventPacket):
+        pass
+
+    @abstractmethod
+    async def _handle_rfid_forecast(self, packet: RfidEventPacket):
+        pass
 
     def signal_handler(self, sig, frame):
         self.loop.call_soon_threadsafe(
@@ -43,9 +97,14 @@ class NabService(ABC):
         """
         Reload configuration (on USR1 signal).
         """
+        raise NotImplementedError("reload_config should be implemented")
 
     async def process_nabd_packet(self, packet: NabdPacket) -> None:
-        pass
+        """
+        Process a packet from nabd.
+        Default implementation is to dispatch it to the router.
+        """
+        await self.router.dispatch(packet)
 
     async def client_loop(self):
         try:
@@ -81,9 +140,7 @@ class NabService(ABC):
                     try:
                         packet = json.loads(line.decode("utf8"))
                         logging.debug(f"process nabd packet: {packet}")
-                        await self.process_nabd_packet(
-                            cast(NabdPacket, packet)
-                        )
+                        await self.router.dispatch(packet)
                     except json.decoder.JSONDecodeError as e:
                         logging.error(
                             f"Invalid JSON packet from nabd: {line}\n{e}"
