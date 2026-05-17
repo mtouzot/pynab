@@ -53,12 +53,14 @@ jobs:
             # Pi Zero 2 do execute 32 bits code concurrently.
             # And it also fails with aarch64 binaries of postgresql.
             sudo -u pi taskset -c 0 /bin/bash /opt/pynab/install.sh ci-chroot-test
-            sudo cp /opt/pynab/coverage.xml /coverage.xml || true
+            echo "Saving coverage to /tmp (host-visible)"
+            sudo cp /opt/pynab/coverage.xml /tmp/coverage.xml
+            sudo chmod 666 /tmp/coverage.xml
             sudo sync
 
       - name: Retrieve coverage file
         run: |
-          cp ${{ steps.arm_runner_tests.outputs.image_mount_path }}/coverage.xml ./coverage-${{ matrix.target }}.xml
+          cp ${{ steps.arm_runner_tests.outputs.image_mount_path }}/tmp/coverage.xml ./coverage-${{ matrix.target }}.xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
