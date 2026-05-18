@@ -37,7 +37,7 @@ jobs:
           cpu: ${{ matrix.cpu }}
           cpu_info: ${{ matrix.cpu_info }}
           copy_artifact_path: coverage.xml
-          copy_artifact_dest: ./coverage-${{ matrix.target }}
+          copy_artifact_dest: ./coverage-${{ matrix.target }}.xml
           copy_repository_path: /opt/pynab
           optimize_image: no
           commands: |
@@ -59,7 +59,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          files: ./coverage-*/coverage.xml
+          file: ./coverage-${{ matrix.target }}.xml
           fail_ci_if_error: true
           flags: unittests-${{ matrix.target }}
           token: ${{ secrets.CODECOV_TOKEN }}
