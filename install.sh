@@ -383,7 +383,7 @@ if [ $test -eq 1 ]; then
   if [ $ci_chroot -eq 1 ]; then
       echo "Running tests with coverage (CI chroot)"
       sudo CI=1 venv/bin/coverage run -m pytest
-      sudo venv/bin/coverage xml -o /opt/pynab/coverage.xml
+      sudo venv/bin/coverage xml -o /tmp/coverage.xml
   else
       echo "Running tests"
       sudo venv/bin/pytest

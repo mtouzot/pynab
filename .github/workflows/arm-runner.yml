@@ -36,6 +36,8 @@ jobs:
           base_image: ${{ matrix.base_image }}
           cpu: ${{ matrix.cpu }}
           cpu_info: ${{ matrix.cpu_info }}
+          copy_artifact_path: /tmp/coverage.xml
+          copy_artifact_dest: ./coverage-${{ matrix.target }}
           copy_repository_path: /opt/pynab
           optimize_image: no
           commands: |
@@ -53,21 +55,11 @@ jobs:
             # Pi Zero 2 do execute 32 bits code concurrently.
             # And it also fails with aarch64 binaries of postgresql.
             sudo -u pi taskset -c 0 /bin/bash /opt/pynab/install.sh ci-chroot-test
-            echo "Saving coverage to persistent location"
-            sudo cp /opt/pynab/coverage.xml /root/coverage.xml
-            sudo chmod 666 /root/coverage.xml
-            sudo chmod 755 /root
-            sudo sync
-
-      - name: Retrieve coverage file
-        run: |
-          sudo ls -lah ${{ steps.arm_runner_tests.outputs.image_mount_path }}/root || true
-          sudo cp ${{ steps.arm_runner_tests.outputs.image_mount_path }}/root/coverage.xml ./coverage-${{ matrix.target }}.xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          files: ./coverage-*.xml
+          files: ./coverage-*/coverage.xml
           fail_ci_if_error: true
           flags: unittests-${{ matrix.target }}
           token: ${{ secrets.CODECOV_TOKEN }}
