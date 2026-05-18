@@ -36,7 +36,7 @@ jobs:
           base_image: ${{ matrix.base_image }}
           cpu: ${{ matrix.cpu }}
           cpu_info: ${{ matrix.cpu_info }}
-          copy_artifact_path: /tmp/coverage.xml
+          copy_artifact_path: coverage.xml
           copy_artifact_dest: ./coverage-${{ matrix.target }}
           copy_repository_path: /opt/pynab
           optimize_image: no
