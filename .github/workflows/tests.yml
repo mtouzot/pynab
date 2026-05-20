@@ -51,9 +51,9 @@ jobs:
             sudo -u pi taskset -c 0 /bin/bash /opt/pynab/install.sh ci-chroot-test
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v6.0.1
         with:
-          file: ./coverage-${{ matrix.target }}.xml
+          files: ./coverage-${{ matrix.target }}.xml
           fail_ci_if_error: true
           flags: unittests-${{ matrix.target }}
           token: ${{ secrets.CODECOV_TOKEN }}
