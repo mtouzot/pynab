@@ -29,17 +29,23 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
 
-      - name: Cache apt + build dirs
-        uses: actions/cache@v5.0.5
+      # 🐍 Cache tools (pip etc.)
+      - name: Cache pip / tools
+        uses: actions/cache@v5
         with:
-          path: |
-            ~/.cache/apt
-            /var/cache/apt
-            /opt/pynab/.cache
-          key: >
-            ${{ runner.os }}-${{ matrix.target }}-${{ matrix.base_image }}-${{ hashFiles('**/*.sh', '**/*.py') }}
+          path: ~/.cache
+          key: ${{ runner.os }}-cache-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.target }}-${{ matrix.base_image }}
+            ${{ runner.os }}-cache-
+
+      # 🧠 Cache spécifique à ton build (le plus important)
+      - name: Cache pynab build
+        uses: actions/cache@v5
+        with:
+          path: /opt/pynab/.cache
+          key: ${{ runner.os }}-${{ matrix.target }}-${{ matrix.base_image }}-${{ hashFiles('setup', '**/*.sh') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.target }}-${{ matrix.base_image }}-
 
       - name: Define the image name
         id: image_and_branch_name
