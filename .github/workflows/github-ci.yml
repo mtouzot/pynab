@@ -8,17 +8,30 @@ on:
 jobs:
 
   # =========================
-  # 1. TESTS (GLOBAL CI)
+  # 1. LINT (GLOBAL CI)
+  # =========================
+  lint:
+    uses: ./.github/workflows/python-lint.yml
+
+  # =========================
+  # 2. TESTS (GLOBAL CI)
   # =========================
   tests:
+    needs: lint
     uses: ./.github/workflows/tests.yml
 
+  # =========================
+  # 3. CodeQL (GLOBAL CI)
+  # =========================
+  codeql:
+    needs: tests
+    uses: ./.github/workflows/codeql.yml
 
   # =========================
-  # 2. BUILD IMAGE (CONDITIONNÉ)
+  # 4. BUILD IMAGE (CONDITIONNÉ)
   # =========================
   build:
-    needs: tests
+    needs: [tests, codeql]
     if: success() && github.event_name != 'pull_request'
     uses: ./.github/workflows/arm-runner.yml
     with:
@@ -26,10 +39,10 @@ jobs:
 
 
   # =========================
-  # 3. SEMANTIC RELEASE (MAIN ONLY)
+  # 5. SEMANTIC RELEASE (MAIN ONLY)
   # =========================
   semantic_release:
-    needs: tests
+    needs: [tests, codeql]
     if: success() && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
