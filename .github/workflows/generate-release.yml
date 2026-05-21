@@ -1,0 +1,19 @@
+name: 📩 Release images
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+
+  build:
+    uses: ./.github/workflows/arm-runner.yml
+    with:
+      ref: ${{ github.ref }}
+
+  release:
+    needs: build
+    uses: ./.github/workflows/arm-release.yml
+    with:
+      ref: ${{ github.ref }}

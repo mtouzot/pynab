@@ -1,0 +1,65 @@
+name: 💿 Release image
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Check artifacts exist
+        run: ls artifacts/*.img.xz
+
+      - name: Generate checksums
+        run: |
+          cd artifacts
+          sha256sum *.img.xz > SHA256SUMS
+
+      - name: Generate metadata
+        run: |
+          cd artifacts
+          cat <<EOF > metadata.json
+          {
+            "ref": "${{ inputs.ref }}",
+            "commit": "${{ github.sha }}",
+            "build_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+
+      - name: Create releng release
+        if: inputs.ref == 'refs/heads/releng'
+        uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: latest
+          prerelease: true
+          draft: true
+          title: Prerelease
+          files: |
+            artifacts/*.img.xz
+            artifacts/SHA256SUMS
+            artifacts/metadata.json
+
+      - name: Create tag release
+        if: startsWith(inputs.ref, 'refs/tags/')
+        uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ github.ref_name }}
+          prerelease: false
+          draft: true
+          title: ${{ github.ref_name }}
+          files: |
+            artifacts/*.img.xz
+            artifacts/SHA256SUMS
+            artifacts/metadata.json

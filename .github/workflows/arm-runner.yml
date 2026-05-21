@@ -1,69 +1,12 @@
 name: 🏗️  Build
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - '*'
-  pull_request:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
   workflow_dispatch:
 jobs:
-  test_suite:
-    name: Run test suite
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        target: [zero_raspios, zero2_64_raspios]
-        include:
-        - target: zero_raspios
-          cpu: arm1176
-          cpu_info: cpuinfo/raspberrypi_zero_w
-          base_image: raspios_lite:2023-05-03
-        - target: zero2_64_raspios
-          cpu: cortex-a53
-          cpu_info: cpuinfo/raspberrypi_zero2_w_arm64
-          base_image: raspios_lite_arm64:2023-05-03
-    steps:
-      - name: Checkout pynab
-        uses: actions/checkout@v6
-
-      - name: Run test suite in chroot environment
-        uses: mtouzot/arm-runner-action@v2.6.6
-        id: arm_runner_tests
-        with:
-          image_additional_mb: 4096
-          base_image: ${{ matrix.base_image }}
-          cpu: ${{ matrix.cpu }}
-          cpu_info: ${{ matrix.cpu_info }}
-          copy_artifact_path: coverage.xml
-          copy_artifact_dest: ./coverage-${{ matrix.target }}.xml
-          copy_repository_path: /opt/pynab
-          optimize_image: no
-          commands: |
-            # Disable IPv6 in case it is configured but does not work
-            ping6 -c 1 www.ietf.org || sudo sysctl -w net.ipv6.conf.eth0.disable_ipv6=1
-            sudo useradd pi || true
-            sudo sh -c "[ ! -f /etc/sudoers.d/010_pi-nopasswd ] && usermod -aG sudo pi && echo 'pi ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/010_pi-nopasswd || true"
-            sudo chown -hR pi:pi /opt/pynab
-            sudo apt-get update -y --allow-releaseinfo-change
-            sudo apt-get install --no-install-recommends -y postgresql libpq-dev git python3 python3-venv python3-dev gettext nginx openssl libssl-dev libffi-dev libmpg123-dev libasound2-dev libatlas-base-dev libgfortran5 libopenblas-dev liblapack-dev zram-tools
-            sudo mkdir -p /run/systemd/timesync/ && sudo touch /run/systemd/timesync/synchronized
-            sudo apt-get install --no-install-recommends -y alsa-utils xz-utils avahi-daemon
-            # Tests only run on a single CPU, postgresql aborts otherwise.
-            # It might be because armv6l binaries are not thread safe, but
-            # Pi Zero 2 do execute 32 bits code concurrently.
-            # And it also fails with aarch64 binaries of postgresql.
-            sudo -u pi taskset -c 0 /bin/bash /opt/pynab/install.sh ci-chroot-test
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          file: ./coverage-${{ matrix.target }}.xml
-          fail_ci_if_error: true
-          flags: unittests-${{ matrix.target }}
-          token: ${{ secrets.CODECOV_TOKEN }}
-
   create_image:
     name: Build image
     runs-on: ubuntu-latest
@@ -83,28 +26,62 @@ jobs:
     steps:
       - name: Checkout pynab
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
+
+      # 🐍 Cache tools (pip etc.)
+      - name: Cache pip / tools
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache
+          key: ${{ runner.os }}-cache-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-
+
+      # 🧠 Cache spécifique à ton build (le plus important)
+      - name: Cache pynab build
+        uses: actions/cache@v5
+        with:
+          path: /opt/pynab/.cache
+          key: ${{ runner.os }}-${{ matrix.target }}-${{ matrix.base_image }}-${{ hashFiles('setup', '**/*.sh') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.target }}-${{ matrix.base_image }}-
 
       - name: Define the image name
         id: image_and_branch_name
         run: |
-          if [ ${GITHUB_REF/refs\/tags\//} != ${GITHUB_REF} ]; then
-            echo "LOCAL_BRANCH=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
-            echo "RELEASE_NAME=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
-            echo "IMAGE_NAME_SUFFIX=${GITHUB_REF/refs\/tags\//}-${{ matrix.target }}" >> $GITHUB_OUTPUT
+          REF="${{ inputs.ref }}"
+
+          # always normalize FIRST
+          SAFE_REF="${REF//\//-}"
+
+          if [[ "$REF" == refs/tags/* ]]; then
+            NAME="${REF#refs/tags/}"
+            SAFE_NAME="${NAME//\//-}"
+
+            echo "LOCAL_BRANCH=$NAME" >> $GITHUB_OUTPUT
+            echo "RELEASE_NAME=$NAME" >> $GITHUB_OUTPUT
+            echo "IMAGE_NAME_SUFFIX=$SAFE_NAME-${{ matrix.target }}" >> $GITHUB_OUTPUT
             echo "CLONE_RELEASE=yes" >> $GITHUB_OUTPUT
-          elif [ ${GITHUB_REF/refs\/heads\//} = "releng" ]; then
+
+          elif [[ "$REF" == refs/heads/releng ]]; then
             echo "LOCAL_BRANCH=releng" >> $GITHUB_OUTPUT
             echo "RELEASE_NAME=releng" >> $GITHUB_OUTPUT
             echo "IMAGE_NAME_SUFFIX=releng-${{ matrix.target }}" >> $GITHUB_OUTPUT
             echo "CLONE_RELEASE=yes" >> $GITHUB_OUTPUT
-          elif [ ${GITHUB_REF/refs\/heads\//} != "${GITHUB_REF}" ]; then
-            echo "LOCAL_BRANCH=${GITHUB_REF/refs\/heads\//}" >> $GITHUB_OUTPUT
-            echo "RELEASE_NAME=${GITHUB_REF/refs\/heads\//}" >> $GITHUB_OUTPUT
-            echo "IMAGE_NAME_SUFFIX=${GITHUB_REF/refs\/heads\//}-${{ matrix.target }}" >> $GITHUB_OUTPUT
+
+          elif [[ "$REF" == refs/heads/* ]]; then
+            NAME="${REF#refs/heads/}"
+            SAFE_NAME="${NAME//\//-}"
+
+            echo "LOCAL_BRANCH=$NAME" >> $GITHUB_OUTPUT
+            echo "RELEASE_NAME=$NAME" >> $GITHUB_OUTPUT
+            echo "IMAGE_NAME_SUFFIX=$SAFE_NAME-${{ matrix.target }}" >> $GITHUB_OUTPUT
             echo "CLONE_RELEASE=yes" >> $GITHUB_OUTPUT
+
           else
-            echo "LOCAL_BRANCH=${GITHUB_REF}" >> $GITHUB_OUTPUT
-            echo "IMAGE_NAME_SUFFIX=${GITHUB_REF//\//-}-${{ matrix.target }}" >> $GITHUB_OUTPUT
+            echo "LOCAL_BRANCH=$REF" >> $GITHUB_OUTPUT
+            echo "IMAGE_NAME_SUFFIX=$SAFE_REF-${{ matrix.target }}" >> $GITHUB_OUTPUT
             echo "CLONE_RELEASE=no" >> $GITHUB_OUTPUT
           fi
 
@@ -154,46 +131,3 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  create_release:
-    name: Release
-    runs-on: ubuntu-latest
-    needs:
-      - test_suite
-      - create_image
-    if: github.ref == 'refs/heads/releng' || startsWith(github.ref, 'refs/tags/')
-    steps:
-      - name: Define the release name
-        id: release_name
-        run: |
-          if [ ${GITHUB_REF/refs\/tags\//} != ${GITHUB_REF} ]; then
-             echo "RELEASE_NAME=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
-          elif [ ${GITHUB_REF/refs\/heads\//} = "releng" ]; then
-             echo "RELEASE_NAME=releng" >> $GITHUB_OUTPUT
-          else
-             echo "RELEASE_NAME=${GITHUB_REF/refs\/heads\//}" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Download the image artifacts
-        uses: actions/download-artifact@v8
-
-      - name: Create release with releng image
-        if: github.ref == 'refs/heads/releng'
-        uses: "marvinpinto/action-automatic-releases@v1.2.1"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          draft: true
-          title: "Prerelease"
-          files: pynab-${{ steps.release_name.outputs.RELEASE_NAME }}-*.img.xz/pynab-${{ steps.release_name.outputs.RELEASE_NAME }}-*.img.xz
-
-      - name: Create release with release image
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: "marvinpinto/action-automatic-releases@v1.2.1"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ steps.release_name.outputs.RELEASE_NAME }}
-          prerelease: false
-          draft: true
-          title: ${{ steps.release_name.outputs.RELEASE_NAME }}
-          files: pynab-${{ steps.release_name.outputs.RELEASE_NAME }}-*.img.xz/pynab-${{ steps.release_name.outputs.RELEASE_NAME }}-*.img.xz
