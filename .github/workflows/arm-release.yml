@@ -6,6 +6,8 @@ on:
       ref:
         required: true
         type: string
+  push:
+    branches: [main]
 
 jobs:
   create_release:
