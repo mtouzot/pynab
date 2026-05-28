@@ -1,6 +1,9 @@
 name: 🧪  Tests
 on:
   workflow_call:
+  push:
+    branches: [main]
+
 jobs:
   test_suite:
     name: Run test suite
