@@ -1,7 +1,7 @@
 # Nabaztag en Python pour Raspberry Pi
 
-[![tests](https://github.com/mtouzot/pynab/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/mtouzot/pynab/actions/workflows/tests.yml)
-[![build (raspberry pi)](https://github.com/mtouzot/pynab/actions/workflows/arm-runner.yml/badge.svg?branch=main)](https://github.com/mtouzot/pynab/actions/workflows/arm-runner.yml)
+[![tests](https://github.com/mtouzot/pynab/actions/workflows/tests.yml/badge.svg)](https://github.com/mtouzot/pynab/actions/workflows/tests.yml)
+[![build (raspberry pi)](https://github.com/mtouzot/pynab/actions/workflows/arm-runner.yml/badge.svg)](https://github.com/mtouzot/pynab/actions/workflows/arm-runner.yml)
 ![coverage](https://codecov.io/gh/mtouzot/pynab/branch/main/graph/badge.svg)
 
 ![lint](https://github.com/mtouzot/pynab/actions/workflows/python-lint.yml/badge.svg)
