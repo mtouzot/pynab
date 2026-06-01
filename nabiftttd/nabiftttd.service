@@ -10,7 +10,7 @@ RestartSec=1
 User=root
 WorkingDirectory=/opt/pynab
 EnvironmentFile=/opt/pynab/nabiftttd/nabiftttd.conf
-ExecStart=/opt/pynab/venv/bin/python -m nabiftttd.nabiftttd
+ExecStart=uv run python -m nabiftttd.nabiftttd
 PIDFile=/run/nabiftttd.pid
 
 [Install]

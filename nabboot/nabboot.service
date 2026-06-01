@@ -5,7 +5,7 @@ Description=Nabaztag boot script, initializing leds and motors
 Type=oneshot
 User=root
 WorkingDirectory=/opt/pynab
-ExecStart=/opt/pynab/venv/bin/python -m nabboot.nabboot start
+ExecStart=uv run python -m nabboot.nabboot start
 
 [Install]
 WantedBy=multi-user.target

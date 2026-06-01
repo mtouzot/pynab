@@ -10,7 +10,7 @@ RestartSec=1
 User=root
 WorkingDirectory=/opt/pynab
 EnvironmentFile=/opt/pynab/nabtaichid/nabtaichid.conf
-ExecStart=/opt/pynab/venv/bin/python -m nabtaichid.nabtaichid
+ExecStart=uv run python -m nabtaichid.nabtaichid
 PIDFile=/run/nabtaichid.pid
 
 [Install]

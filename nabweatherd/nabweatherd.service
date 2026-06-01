@@ -10,7 +10,7 @@ RestartSec=1
 User=root
 WorkingDirectory=/opt/pynab
 EnvironmentFile=/opt/pynab/nabweatherd/nabweatherd.conf
-ExecStart=/opt/pynab/venv/bin/python -m nabweatherd.nabweatherd
+ExecStart=uv run python -m nabweatherd.nabweatherd
 PIDFile=/run/nabweatherd.pid
 
 [Install]

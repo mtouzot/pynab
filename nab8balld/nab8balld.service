@@ -10,7 +10,7 @@ RestartSec=1
 User=root
 WorkingDirectory=/opt/pynab
 EnvironmentFile=/opt/pynab/nab8balld/nab8balld.conf
-ExecStart=/opt/pynab/venv/bin/python -m nab8balld.nab8balld
+ExecStart=uv run python -m nab8balld.nab8balld
 PIDFile=/run/nab8balld.pid
 
 [Install]

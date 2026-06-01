@@ -10,7 +10,7 @@ RestartSec=1
 User=root
 WorkingDirectory=/opt/pynab
 EnvironmentFile=/opt/pynab/nabbookd/nabbookd.conf
-ExecStart=/opt/pynab/venv/bin/python -m nabbookd.nabbookd
+ExecStart=uv run python -m nabbookd.nabbookd
 PIDFile=/run/nabbookd.pid
 
 [Install]

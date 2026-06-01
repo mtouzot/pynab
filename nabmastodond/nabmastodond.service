@@ -10,7 +10,7 @@ RestartSec=1
 User=root
 WorkingDirectory=/opt/pynab
 EnvironmentFile=/opt/pynab/nabmastodond/nabmastodond.conf
-ExecStart=/opt/pynab/venv/bin/python -m nabmastodond.nabmastodond
+ExecStart=uv run python -m nabmastodond.nabmastodond
 PIDFile=/run/nabmastodond.pid
 
 [Install]
