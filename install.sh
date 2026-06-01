@@ -227,7 +227,7 @@ if [ $makerfaire2018 -eq 0 ]; then
     pushd ${root_dir}
     if [[ -f venv/lib/python3.7/site-packages/kaldiasr/nnet3.cpython-37m-arm-linux-gnueabihf.so && "$(grep -c ZN3fst8internal14DenseSymbolMapD1Ev venv/lib/python3.7/site-packages/kaldiasr/nnet3.cpython-37m-arm-linux-gnueabihf.so)" -ne 0 ]]; then
         echo "Removing incompatible py-kaldi-asr package"
-        venv/bin/pip uninstall -y py-kaldi-asr
+        uv pip uninstall -y py-kaldi-asr
     fi
     popd
   fi
@@ -245,31 +245,49 @@ if [ $makerfaire2018 -eq 0 ]; then
   fi
 fi
 
-cd ${root_dir}
-if [ -x "$(command -v python3.9)" ] ; then
-  py_ver=3.9
-else
-  echo "Please install Python 3.9 (you might need to upgrade your Linux distribution)"
-  exit 1
+# --- Install uv (forced) ---
+if ! command -v uv >/dev/null 2>&1; then
+  cd /tmp
+  echo "Installing uv..."
+  curl -LsSf https://astral.sh/uv/install.sh | sh
 fi
+export PATH="$HOME/.local/bin:$PATH"
+sudo ln -s /home/pi/.local/bin/uv /usr/local/bin/uv
+
+cd ${root_dir}
+echo "Setting up Python environment with uv"
+py_ver=3.9
 python=python${py_ver}
-venv_cfg="venv/pyvenv.cfg"
+venv_cfg=".venv/pyvenv.cfg"
 if [[ -f "${venv_cfg}" && "$(grep -c version\ =\ ${py_ver} ${venv_cfg})" -eq 0 ]]; then
    # Installed virtual env does not match needed version: remove it
-   sudo rm -rf "venv"
+   sudo rm -rf ".venv"
 fi
-if [ ! -d "venv" ]; then
+if [ ! -d ".venv" ]; then
   echo "Creating Python ${py_ver} virtual environment"
-  ${python} -m venv venv
+  uv venv --python 3.9
 fi
+
+uv run python -m ensurepip --upgrade 2>/dev/null || true
+uv pip install --python .venv pip setuptools wheel
 
 echo "Installing PyPi requirements"
 if [ $upgrade -eq 1 ]; then
   echo "Updating Python requirements - 7/14" > /tmp/pynab.upgrade
 fi
-# Start with wheel which is required to compile some of the other requirements
-venv/bin/pip install --no-cache-dir wheel
-venv/bin/pip install --no-cache-dir -r requirements.txt
+
+# IMPORTANT: prevent uv isolation issues
+export UV_NO_BUILD_ISOLATION=1
+export PIP_NO_BUILD_ISOLATION=1
+export SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True
+
+echo "Pre-installing scikit-learn (binary)"
+sudo apt-get install -y python3-numpy python3-scipy python3-sklearn
+uv pip install --python .venv --no-deps scikit-learn==0.24.2
+
+uv sync --no-build-isolation
+
+uv pip install pip setuptools wheel --force-reinstall --no-deps
 
 if [ $makerfaire2018 -eq 0 ]; then
   if [ $upgrade -eq 1 ]; then
@@ -277,30 +295,33 @@ if [ $makerfaire2018 -eq 0 ]; then
   fi
 
   # maker faire card has no mic, no need to install snips
-  if [ ! -d "venv/lib/${python}/site-packages/snips_nlu_fr" ]; then
+  if [ ! -d ".venv/lib/${python}/site-packages/snips_nlu_fr" ]; then
     echo "Downloading Snips NLU models for French"
-    venv/bin/python -m snips_nlu download fr
+    .venv/bin/python -m snips_nlu download fr
   fi
 
-  if [ ! -d "venv/lib/${python}/site-packages/snips_nlu_en" ]; then
+  if [ ! -d ".venv/lib/${python}/site-packages/snips_nlu_en" ]; then
     echo "Downloading Snips NLU models for English"
-    venv/bin/python -m snips_nlu download en
+    .venv/bin/python -m snips_nlu download en
   fi
+
+  export SNIPS_NLU_DATA_PATH=".venv/lib/python3.9/site-packages/snips_nlu"
+  uv pip install --python .venv --force-reinstall "setuptools<70"
 
   echo "Compiling Snips datasets"
   mkdir -p nabd/nlu
-  venv/bin/python -m snips_nlu generate-dataset en */nlu/intent_en.yaml > nabd/nlu/nlu_dataset_en.json
-  venv/bin/python -m snips_nlu generate-dataset fr */nlu/intent_fr.yaml > nabd/nlu/nlu_dataset_fr.json
+  .venv/bin/python -m snips_nlu generate-dataset en */nlu/intent_en.yaml > nabd/nlu/nlu_dataset_en.json
+  .venv/bin/python -m snips_nlu generate-dataset fr */nlu/intent_fr.yaml > nabd/nlu/nlu_dataset_fr.json
 
   echo "Persisting Snips engines"
   if [ -d nabd/nlu/engine_en ]; then
     rm -rf nabd/nlu/engine_en
   fi
-  venv/bin/snips-nlu train nabd/nlu/nlu_dataset_en.json nabd/nlu/engine_en
+  .venv/bin/snips-nlu train nabd/nlu/nlu_dataset_en.json nabd/nlu/engine_en
   if [ -d nabd/nlu/engine_fr ]; then
     rm -rf nabd/nlu/engine_fr
   fi
-  venv/bin/snips-nlu train nabd/nlu/nlu_dataset_fr.json nabd/nlu/engine_fr
+  .venv/bin/snips-nlu train nabd/nlu/nlu_dataset_fr.json nabd/nlu/engine_fr
 fi
 
 trust=`sudo grep local /etc/postgresql/*/main/pg_hba.conf | grep -cE '^local +all +all +trust' || echo -n ''`
@@ -362,19 +383,19 @@ echo "Updating data models"
 if [ $upgrade -eq 1 ]; then
   echo "Updating data models - 10/14" > /tmp/pynab.upgrade
 fi
-venv/bin/python manage.py migrate
+uv run python manage.py migrate
 
 all_locales="-l fr_FR -l de_DE -l en_US -l en_GB -l it_IT -l es_ES -l ja_jp -l pt_BR -l de -l en -l es -l fr -l it -l ja -l pt"
 
 echo "Updating localization messages"
 if [ $upgrade -eq 0 ]; then
-  venv/bin/django-admin compilemessages ${all_locales}
+  uv run django-admin compilemessages ${all_locales}
 else
   echo "Updating localization messages - 11/14" > /tmp/pynab.upgrade
   for module in nab*/locale; do
     (
       cd `dirname ${module}`
-      ../venv/bin/django-admin compilemessages ${all_locales}
+      ../uv run django-admin compilemessages ${all_locales}
     )
   done
 fi
@@ -382,11 +403,11 @@ fi
 if [ $test -eq 1 ]; then
   if [ $ci_chroot -eq 1 ]; then
       echo "Running tests with coverage (CI chroot)"
-      sudo CI=1 venv/bin/coverage run -m pytest
-      sudo venv/bin/coverage xml -o /opt/pynab/coverage.xml
+      sudo CI=1 uv run coverage run -m pytest
+      sudo uv run coverage xml -o /opt/pynab/coverage.xml
   else
       echo "Running tests"
-      sudo venv/bin/pytest
+      sudo uv run pytest
   fi
 fi
 
